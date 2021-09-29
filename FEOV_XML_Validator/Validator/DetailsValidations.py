@@ -182,3 +182,25 @@ def validateSubTotal(data: xml.etree.ElementTree.Element, position):
         return "Valor de nodo 'SubTotal' en seccion 'DetalleServicio/LineaDetalle', no puede ser vacío."
 
 
+def validateTaxBase(data: xml.etree.ElementTree.Element, position):
+    try:
+        taxCode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Codigo")[position].text
+        if taxCode == "07":
+            try:
+                taxBaseNode = data.findall(".//DetalleServicio/LineaDetalle/BaseImponible")[position].text
+                isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(taxBaseNode, 18, 5)
+                if not isValidDecimal:
+                    return "Valor de nodo 'BaseImponible' en seccion 'DetalleServicio/LineaDetalle', línea " \
+                        + position + " no posee un formato válido (18 enteros (maximo), 5 decimales)"
+                else:
+                    return True
+            except:
+                return "Valor de nodo 'BaseImponible' en seccion 'DetalleServicio/LineaDetalle', no puede ser vacío."
+        else:
+            return True
+    except:
+        return True
+
+
+#def validateTaxCode(data: xml.etree.ElementTree.Element, position):
+    #taxCode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Codigo")[position].text

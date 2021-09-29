@@ -1,7 +1,7 @@
 import Validator.XMLValidator
 import Validator.AuxiliarFunctions
 import Validator.SenderValidations
-import re
+
 def run(path, xmlType):
     result = Validator.XMLValidator.validateXML(path, xmlType)
     # Verifica si todos los elementos de la lista son True
@@ -22,10 +22,3 @@ variable = "fe@grupointeca.com"
 if __name__ == '__main__':
     run("//gishared/ServidordeArchivos/Documentos por Area/Factura Electronica/OV/cmer_OV_01778539.xml", 0)
 
-def check():
-    if re.match(REEmailSender, variable):
-        print("True")
-    else:
-        print("False")
-
-#check()
