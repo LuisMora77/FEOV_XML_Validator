@@ -5,8 +5,8 @@ import re
 
 def validateDetailsInfo(data: xml.etree.ElementTree.Element):
     totalLineas = data.findall(".//DetalleServicio/LineaDetalle/NumeroLinea")
-    for i in range(len(totalLineas)):
-        print("Yahoo! \n")
+    #for i in range(len(totalLineas)):
+        #print("Yahoo! \n")
 
 
 def validateLineNumber(data: xml.etree.ElementTree.Element, position):
