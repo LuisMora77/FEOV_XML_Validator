@@ -202,5 +202,88 @@ def validateTaxBase(data: xml.etree.ElementTree.Element, position):
         return True
 
 
-#def validateTaxCode(data: xml.etree.ElementTree.Element, position):
-    #taxCode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Codigo")[position].text
+def validateTaxCode(data: xml.etree.ElementTree.Element, position):
+    acceptedCodes = ["01", "02", "03", "04", "05", "06", "07", "08", "12", "99"]
+    #acceptedCodes = ["01", "02", "03", "04", "05", "06", "07", "08"]
+    try:
+        taxCode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Codigo")[position].text
+        if len(taxCode) != 2 or taxCode not in acceptedCodes:
+            return "Valor de nodo 'Codigo' en seccion DetalleServicio/LineaDetalle/Impuesto, línea " + position +  \
+                   " no posee un formato valido (2 caracteres) o no es valido con respecto al catalogo de tipos: " \
+                   + str(acceptedCodes)
+        else:
+            return True
+    except:
+        return "Valor de nodo 'Codigo' en seccion 'DetalleServicio/LineaDetalle/Impuesto', no puede ser vacío."
+
+
+def validateTaxRateCode(data: xml.etree.ElementTree.Element, position):
+    acceptedCodes = ["01", "02", "03", "04", "05", "06", "07", "08"]
+    try:
+        taxRateCodNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/CodigoTarifa")[position].text
+        if len(taxRateCodNode) != 2 or taxRateCodNode not in acceptedCodes:
+            return "Valor de nodo 'CodigoTarifa' en seccion DetalleServicio/LineaDetalle/Impuesto, línea "           \
+                   + position + " no posee un formato valido (2 caracteres) o no es valido con respecto al catalogo" \
+                    " de tipos: " + str(acceptedCodes)
+        else:
+            return True
+    except:
+        return "Valor de nodo 'CodigoTarifa' en seccion 'DetalleServicio/LineaDetalle/Impuesto', no puede ser vacío."
+
+
+def validateTaxRate(data: xml.etree.ElementTree.Element, position):
+    try:
+        taxRateNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Tarifa")[position].text
+        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(taxRateNode, 4, 5)
+        if not isValidDecimal:
+            return "Valor de nodo 'Tarifa' en seccion 'DetalleServicio/LineaDetalle/Impuesto', línea " \
+                   + position + " no posee un formato válido (18 enteros (maximo), 5 decimales)"
+        else:
+            return True
+    except:
+        return "Valor de nodo 'Tarifa' en seccion 'DetalleServicio/LineaDetalle/Impuesto', no puede ser vacío."
+
+
+def validateAmount(data: xml.etree.ElementTree.Element, position):
+    try:
+        amountNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Monto")[position].text
+        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(amountNode, 18, 5)
+        if not isValidDecimal:
+            return "Valor de nodo 'Monto' en seccion 'DetalleServicio/LineaDetalle/Impuesto', línea " \
+                   + position + " no posee un formato válido (18 enteros (maximo), 5 decimales)"
+        else:
+            return True
+    except:
+        return "Valor de nodo 'Monto' en seccion 'DetalleServicio/LineaDetalle/Impuesto/Monto', no puede ser vacío."
+
+
+def validateExonerationDocuemntType(data: xml.etree.ElementTree.Element, position):
+    acceptedTypes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "99"]
+    try:
+        docTypeNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion/TipoDocumento")[position].text
+        if len(docTypeNode) !=2 or docTypeNode not in acceptedTypes:
+            return "Valor de nodo 'TipoDocumento' en seccion DetalleServicio/LineaDetalle/Impuesto/Exoneracion, línea "\
+                   + position + " no posee un formato valido (2 caracteres) o no es valido con respecto al catalogo" \
+                    " de tipos: " + str(acceptedTypes)
+        else:
+            return True
+    except:
+        return "Valor de nodo 'TipoDocumento' en seccion 'DetalleServicio/LineaDetalle/Impuesto/Exoneracion', no " \
+               "puede ser vacío."
+
+
+def validateDocNumber(data: xml.etree.ElementTree.Element, position):
+    exonerationNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion")
+    if len(exonerationNode) != 0:
+        try:
+            docNum = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion/NumeroDocumento")[position].text
+            if len(docNum) > 40:
+                return "Valor de nodo 'NumeroDocumento' en seccion 'DetalleServicio/LineaDetalle/Impuesto', línea " \
+                       + position + " no posee un formato válido (maximo 40 caracteres). "
+            else:
+                return True
+        except:
+            return "Valor de nodo 'NumeroDocumento' en seccion 'DetalleServicio/LineaDetalle/Impuesto/Exoneracion', " \
+                   "no puede ser vacío."
+
+
