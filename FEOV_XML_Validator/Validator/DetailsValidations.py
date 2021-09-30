@@ -261,7 +261,7 @@ def validateExonerationDocuemntType(data: xml.etree.ElementTree.Element, positio
     acceptedTypes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "99"]
     try:
         docTypeNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion/TipoDocumento")[position].text
-        if len(docTypeNode) !=2 or docTypeNode not in acceptedTypes:
+        if len(docTypeNode) != 2 or docTypeNode not in acceptedTypes:
             return "Valor de nodo 'TipoDocumento' en seccion DetalleServicio/LineaDetalle/Impuesto/Exoneracion, línea "\
                    + position + " no posee un formato valido (2 caracteres) o no es valido con respecto al catalogo" \
                     " de tipos: " + str(acceptedTypes)
@@ -285,5 +285,100 @@ def validateDocNumber(data: xml.etree.ElementTree.Element, position):
         except:
             return "Valor de nodo 'NumeroDocumento' en seccion 'DetalleServicio/LineaDetalle/Impuesto/Exoneracion', " \
                    "no puede ser vacío."
+
+
+def validateInstitutionName(data: xml.etree.ElementTree.Element, position):
+    exonerationNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion")
+    if len(exonerationNode) != 0:
+        try:
+            instName = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion/NombreInstitucion")[position].text
+            if len(instName) > 160:
+                return "Valor de nodo 'NombreInstitucion' en seccion 'DetalleServicio/LineaDetalle/Impuesto/ " \
+                        "Exoneracion/NombreInstitucion', línea " \
+                       + position + " no posee un formato válido (maximo 160 caracteres)."
+            else:
+                return True
+        except:
+            return "Valor de nodo 'NombreInstitucion' en seccion 'DetalleServicio/LineaDetalle/Impuesto/Exoneracion" \
+                   "/NombreInstitucion', no puede ser vacío."
+
+
+def validateSentDate(data: xml.etree.ElementTree.Element, position):
+    exonerationNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion")
+    if len(exonerationNode) != 0:
+        try:
+            dateNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion/FechaEmision")[position].text
+            if dateNode:
+                return True
+        except:
+            return "Valor de nodo 'FechaEmision' en seccion 'DetalleServicio/LineaDetalle/Impuesto/Exoneracion" \
+                   "/FechaEmision', no puede ser vacío."
+
+
+def validateExemptionPercentage(data: xml.etree.ElementTree.Element, position):
+    exonerationNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion")
+    if len(exonerationNode) != 0:
+        try:
+            ExemptionNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion/PorcentajeExoneracion")[position].text
+            if len(ExemptionNode) > 3:
+                return "Valor de nodo 'PorcentajeExoneracion' en seccion 'DetalleServicio/LineaDetalle/Impuesto/ " \
+                        "Exoneracion', línea " + position + " no posee un formato válido (maximo 3 caracteres)."
+            else:
+                return True
+        except:
+            return "Valor de nodo 'PorcentajeExoneracion' en seccion 'DetalleServicio/LineaDetalle/Impuesto/"\
+                    "Exoneracion, no puede ser vacío."
+
+
+def validateExemptionAmount(data: xml.etree.ElementTree.Element, position):
+    exonerationNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion")
+    if len(exonerationNode) != 0:
+        try:
+            ExemptionAmountNode = data.findall(".//DetalleServicio/LineaDetalle/Impuesto/Exoneracion/MontoExoneracion")[position].text
+            isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(ExemptionAmountNode, 18, 5)
+            if not isValidDecimal:
+                return "Valor de nodo 'MontoExoneracion' en seccion 'DetalleServicio/LineaDetalle/Impuesto/Exoneracion', línea " \
+                       + position + " no posee un formato válido (18 enteros (maximo), 5 decimales)"
+            else:
+                return True
+        except:
+            return "Valor de nodo 'MontoExoneracion' en seccion 'DetalleServicio/LineaDetalle/Impuesto/Exoneracion" \
+                   "/FechaEmision', no puede ser vacío."
+
+
+def validateNetTax(data: xml.etree.ElementTree.Element, position):
+    netTaxNode = data.findall(".//DetalleServicio/LineaDetalle/ImpuestoNeto")
+    if len(netTaxNode) > 0:
+        try:
+            netTaxStr = netTaxNode[position].text
+            isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(netTaxStr, 18, 5)
+            if not isValidDecimal:
+                return "Valor de nodo 'ImpuestoNeto' en seccion 'DetalleServicio/LineaDetalle', línea " \
+                       + position + " no posee un formato válido (18 enteros (maximo), 5 decimales)"
+            else:
+                return True
+        except:
+            return "Valor de nodo 'ImpuestoNeto' en seccion 'DetalleServicio/LineaDetalle, no puede ser vacío."
+    else:
+        return "No se encuenta nodo 'ImpuestoNeto' en lineaDetalle " + position +\
+               ", el cual es de caracter obligatorio."
+
+
+def validateTotalLineAmount(data: xml.etree.ElementTree.Element, position):
+    TLANode = data.findall(".//DetalleServicio/LineaDetalle/MontoTotalLinea")
+    if len(TLANode) > 0:
+        try:
+            TLAStr = TLANode[position].text
+            isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(TLAStr, 18, 5)
+            if not isValidDecimal:
+                return "Valor de nodo 'MontoTotalLinea' en seccion 'DetalleServicio/LineaDetalle', línea " \
+                       + position + " no posee un formato válido (18 enteros (maximo), 5 decimales)"
+            else:
+                return True
+        except:
+            return "Valor de nodo 'MontoTotalLinea' en seccion 'DetalleServicio/LineaDetalle, no puede ser vacío."
+    else:
+        return "No se encuenta nodo 'MontoTotalLinea' en lineaDetalle " + position + \
+               ", el cual es de caracter obligatorio."
 
 
