@@ -15,7 +15,8 @@ def validateSenderInfo(data: xml.etree.ElementTree.Element):
                validateSenderState(data), validateSenderCounty(data), validateSenderCity(data),
                validateSenderNeighborhood(data), validateSenderOtherSigns(data), validateSenderTelephone(data),
                validateSenderFax(data), validateSenderEmail(data), validateSenderEmailDetail(data)]
-    return results
+    formattedSenderResults = Validator.AuxiliarFunctions.flattenList(results)
+    return formattedSenderResults
 
 
 def validateSenderNode(data: xml.etree.ElementTree.Element):

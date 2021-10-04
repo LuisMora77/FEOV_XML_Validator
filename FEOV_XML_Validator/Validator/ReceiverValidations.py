@@ -15,7 +15,9 @@ def validateReceiverInfo(data: xml.etree.ElementTree.Element):
                validateReceiverState(data), validateReceiverCounty(data), validateReceiverCity(data),
                validateReceiverNeighborhood(data), validateReceiverOtherSigns(data), validateReceiverTelephone(data),
                validateReceiverFax(data), validateReceiverEmail(data), validateReceiverEmailDetail(data)]
-    return results
+    #print("Resultas de receiver: " + str(results))
+    formattedReceiverResults = Validator.AuxiliarFunctions.flattenList(results)
+    return formattedReceiverResults
 
 
 def validateReceiverNode(data: xml.etree.ElementTree.Element):
@@ -45,13 +47,13 @@ def validateReceiverID(data: xml.etree.ElementTree.Element):
 def validateReceiverIDType(data: xml.etree.ElementTree.Element):
     acceptedIDTypes = ["01", "02", "03", "04"]
     IDNodeType = data.findall('.//Receptor/Identificacion/Tipo')[0].text
-    if len(IDNodeType) == 0 or len(IDNodeType) > 2:
-        return "Tipo de cédula de Receptor no posee el formato adecuado"
-    if IDNodeType in acceptedIDTypes:
-        return True
+    if len(IDNodeType) == 0 or len(IDNodeType) > 2 or IDNodeType not in acceptedIDTypes:
+        return "El valor (" + IDNodeType + ") del nodo 'Tipo' en la sección del Receptor, no es válido con respecto " \
+               "al catálogo de tipos aceptados: " + str(acceptedIDTypes)
     else:
-        return "El valor (" + IDNodeType + ") del nodo 'Tipo' en la sección del Receptor, no es válido con respecto al" \
-                                           " catálogo de tipos: " + str(acceptedIDTypes)
+        return True
+
+
 
 
 def validateReceiverIDNum(data: xml.etree.ElementTree.Element):

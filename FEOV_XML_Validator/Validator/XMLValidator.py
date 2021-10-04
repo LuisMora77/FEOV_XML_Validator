@@ -6,6 +6,7 @@ import Validator.ReceiverValidations
 import Validator.HeaderValidations
 import Validator.DetailsValidations
 
+OKGREEN = '\033[92m'
 
 def readXml(path):
     try:
@@ -35,8 +36,9 @@ def validatePUXml(data: xml.etree.ElementTree.Element):
 
     flat_list = Validator.AuxiliarFunctions.flattenList(result)
     response = all(item == True for item in flat_list)
+    #print("Results: " + str(flat_list))
     if response:
-        return "XML válido"
+        return f"{OKGREEN}XML válido"
     else:
         return Validator.AuxiliarFunctions.formatErrorMessages(flat_list)
 

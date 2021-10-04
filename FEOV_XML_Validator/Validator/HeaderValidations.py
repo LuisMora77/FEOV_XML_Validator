@@ -1,13 +1,15 @@
 import datetime
 from dateutil.parser import parse
 import xml.etree.ElementTree
+import Validator.AuxiliarFunctions
 
 
 def validateHeaderInfo(data: xml.etree.ElementTree.Element):
     results = [validateActivityCode(data), validateSentDate(data), validateSalesCondition(data),
                validateSalesConditionNumber(data), validateSalesCreditTerm(data),
                validateSalesCeditTermFormat(data), validatePaymentMethod(data), validatePaymentMethodFormat(data)]
-    return results
+    formattedHeaderResults = Validator.AuxiliarFunctions.flattenList(results)
+    return formattedHeaderResults
 
 
 def validateActivityCode(data: xml.etree.ElementTree.Element):
@@ -115,5 +117,7 @@ def validatePaymentMethodFormat(data: xml.etree.ElementTree.Element):
             return "El valor (" + paymentMethodNode + ") del nodo 'MedioPago' en la sección del encabezado " \
                                                       "no es válido con respecto al catálogo de tipos: " + str(
                 acceptedPaymentMethods)
+        else:
+            return True
     except:
         "Nodo 'MedioPago' en sección de encabezado está vacio o presenta algún problema"
