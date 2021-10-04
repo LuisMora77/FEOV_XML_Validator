@@ -382,3 +382,94 @@ def validateTotalLineAmount(data: xml.etree.ElementTree.Element, position):
                ", el cual es de caracter obligatorio."
 
 
+def validateOtherChargesDocuemntType(data: xml.etree.ElementTree.Element, position):
+    acceptedDocTypes = ["01", "02", "03", "04", "05", "06", "07", "99"]
+    otherChargesNode = data.findall(".//OtrosCargos")
+    if len(otherChargesNode) > 0:
+        try:
+            OCDocTypeNode = data.findall(".//OtrosCargos/TipoDocumento")[position].text
+            if len(OCDocTypeNode) != 2 or OCDocTypeNode not in acceptedDocTypes:
+                return "Valor de nodo 'TipoDocumento' en seccion 'OtrosCargos', línea " + position + " no posee un " \
+                       "formato valido (2 caracteres) o no es valido con respecto al catalogo de tipos: " \
+                       + str(acceptedDocTypes)
+            else:
+                return True
+        except:
+            return "Valor de nodo 'TipoDocumento' en seccion './/OtrosCargos, no puede ser vacío."
+    else:
+        return True
+
+
+def validateThirdPartysName(data: xml.etree.ElementTree.Element, position):
+    otherChargesNode = data.findall(".//OtrosCargos")
+    if len(otherChargesNode) > 0:
+        try:
+            OCDocTypeNode = data.findall(".//OtrosCargos/TipoDocumento")[position].text
+            if OCDocTypeNode == "04":
+                try:
+                    nameNode = data.findall(".//OtrosCargos/NombreTercero")[position].text
+                    if len(nameNode) > 100:
+                        return "Valor de nodo 'NombreTercero' en seccion 'OtrosCargos', línea " \
+                               + position + " no posee un formato válido (maximo 100 caracteres, caracteres" \
+                               " recibidos: " + str(len(nameNode)) + ")"
+                    else:
+                        return True
+                except:
+                    return "Valor de nodo 'NombreTercero' en seccion './/OtrosCargos, no puede ser vacío."
+            else:
+                return True
+        except:
+            return "Valor de nodo 'TipoDocumento' en seccion './/OtrosCargos, no puede ser vacío."
+    else:
+        return True
+
+
+def validateOCDetail(data: xml.etree.ElementTree.Element, position):
+    otherChargesNode = data.findall(".//OtrosCargos")
+    if len(otherChargesNode) > 0:
+        try:
+            detailsNode = data.findall(".//OtrosCargos/Detalle")[position].text
+            if len(detailsNode) > 160:
+                return "Valor de nodo 'Detalle' en seccion 'OtrosCargos', línea " \
+                       + position + " no posee un formato válido (maximo 160 caracteres, caracteres" \
+                                    " recibidos: " + str(len(detailsNode)) + ")"
+            else:
+                return True
+        except:
+            return "Valor de nodo 'Detalle' en seccion './/OtrosCargos, no puede ser vacío."
+    else:
+        return True
+
+
+def validateOCPercent(data: xml.etree.ElementTree.Element, position):
+    otherChargesNode = data.findall(".//OtrosCargos")
+    if len(otherChargesNode) > 0:
+        try:
+            percentageNode = data.findall(".//OtrosCargos/Porcentaje")[position].text
+            isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(percentageNode, 9, 5)
+            if not isValidDecimal:
+                return "Valor de nodo 'Porcentaje' en seccion 'OtrosCargos', línea " \
+                       + position + " no posee un formato válido (9 enteros (maximo), 5 decimales)"
+            else:
+                return True
+        except:
+            return "Valor de nodo 'Porcentaje' en seccion './/OtrosCargos, no puede ser vacío."
+    else:
+        return True
+
+
+def validateChargeAmoint(data: xml.etree.ElementTree.Element, position):
+    otherChargesNode = data.findall(".//OtrosCargos")
+    if len(otherChargesNode) > 0:
+        try:
+            chargeNode = data.findall(".//OtrosCargos/MontoCargo")
+            isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(chargeNode, 18, 5)
+            if not isValidDecimal:
+                return "Valor de nodo 'MontoCargo' en seccion 'OtrosCargos', línea " \
+                       + position + " no posee un formato válido (18 enteros (maximo), 5 decimales)"
+            else:
+                return True
+        except:
+            return "Valor de nodo 'MontoCargo' en seccion './/OtrosCargos, no puede ser vacío."
+    else:
+        return True
