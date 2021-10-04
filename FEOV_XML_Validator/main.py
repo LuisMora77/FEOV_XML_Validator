@@ -18,7 +18,9 @@ REEmailSender = "^\\s*(([^<>()\\[\\]\\.,;:\\s@\\\"]+(\\.[^<>()\\[\\]\\.,;:\\s@\\
 variable = "fe@grupointeca.com"
 
 
-
+#cmer_OV_01809534
+#cmer_OV_01778539
+#cmer_OV_01780379
 if __name__ == '__main__':
-    run("//gishared/ServidordeArchivos/Documentos por Area/Factura Electronica/OV/cmer_OV_01778539.xml", 0)
+    run("//gishared/ServidordeArchivos/Documentos por Area/Factura Electronica/OV/cmer_OV_01809534_v2.xml", 0)
 
