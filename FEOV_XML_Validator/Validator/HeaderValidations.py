@@ -18,7 +18,7 @@ def validateHeaderInfo(data: xml.etree.ElementTree.Element):
 
 
 def validateActivityCode(data: xml.etree.ElementTree.Element):
-    code = data.findall('eInvoiceNameSpace:CodigoActividad', namespaces)[0].text
+    code = data.find('eInvoiceNameSpace:CodigoActividad', namespaces).text
     if len(code) > 6:
         return "Código de actividad (" + code + ") posee un número de dígitos mayor al permitido (6)"
     else:
@@ -58,7 +58,7 @@ def manageDateSpanValidation(sentDate):
 
 
 def validateSentDate(data: xml.etree.ElementTree.Element):
-    dateStr = data.findall('eInvoiceNameSpace:FechaEmision', namespaces)[0].text
+    dateStr = data.find('eInvoiceNameSpace:FechaEmision', namespaces).text
     results = [manageDateTimeFormatValidation(dateStr), manageDateSpanValidation(dateStr)]
     return results
 
@@ -73,7 +73,7 @@ def validateSalesCondition(data: xml.etree.ElementTree.Element):
 
 def validateSalesConditionNumber(data: xml.etree.ElementTree.Element):
     acceptedConditions = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "99"]  # 02 = Crédito
-    salesConditionNode = data.findall('eInvoiceNameSpace:CondicionVenta', namespaces)[0].text
+    salesConditionNode = data.find('eInvoiceNameSpace:CondicionVenta', namespaces).text
     if len(salesConditionNode) != 2 or salesConditionNode not in acceptedConditions:
         return "El valor (" + salesConditionNode + ") del nodo 'CondicionVenta' en la sección del encabezado," \
                                                    " no es válido con respecto al catálogo de tipos: " + str(
@@ -83,7 +83,7 @@ def validateSalesConditionNumber(data: xml.etree.ElementTree.Element):
 
 
 def validateSalesCreditTerm(data: xml.etree.ElementTree.Element):
-    salesConditionNode = data.findall('eInvoiceNameSpace:CondicionVenta', namespaces)[0].text
+    salesConditionNode = data.find('eInvoiceNameSpace:CondicionVenta', namespaces).text
     if salesConditionNode == "02":
         CreditTermNode = data.findall('eInvoiceNameSpace:PlazoCredito', namespaces)
         if len(CreditTermNode) == 0:
@@ -96,7 +96,7 @@ def validateSalesCreditTerm(data: xml.etree.ElementTree.Element):
 
 def validateSalesCeditTermFormat(data: xml.etree.ElementTree.Element):
     try:
-        creditTermNode = data.findall('eInvoiceNameSpace:PlazoCredito', namespaces)[0].text
+        creditTermNode = data.find('eInvoiceNameSpace:PlazoCredito', namespaces).text
         if len(creditTermNode) > 10:
             return "Valor '" + creditTermNode + "' de nodo 'Plazo Crédito' excede límite de caracteres (10). " \
                                                 "Cantidad obtenida: " + str(len(creditTermNode))
@@ -117,7 +117,7 @@ def validatePaymentMethod(data: xml.etree.ElementTree.Element):
 def validatePaymentMethodFormat(data: xml.etree.ElementTree.Element):
     acceptedPaymentMethods = ["01", "02", "03", "04", "05", "99"]
     try:
-        paymentMethodNode = data.findall('eInvoiceNameSpace:MedioPago', namespaces)[0].text
+        paymentMethodNode = data.find('eInvoiceNameSpace:MedioPago', namespaces).text
         if len(paymentMethodNode) > 2 or paymentMethodNode not in acceptedPaymentMethods:
             return "El valor (" + paymentMethodNode + ") del nodo 'MedioPago' en la sección del encabezado " \
                                                       "no es válido con respecto al catálogo de tipos: " + str(
