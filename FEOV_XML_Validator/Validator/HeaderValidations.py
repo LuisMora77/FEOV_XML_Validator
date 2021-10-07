@@ -3,6 +3,11 @@ from dateutil.parser import parse
 import xml.etree.ElementTree
 import Validator.AuxiliarFunctions
 
+namespaces = {'eInvoiceNameSpace': 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'} # add more as needed
+
+def prependNamespace(node):
+    return '{https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica}' + node
+
 
 def validateHeaderInfo(data: xml.etree.ElementTree.Element):
     results = [validateActivityCode(data), validateSentDate(data), validateSalesCondition(data),
@@ -13,7 +18,7 @@ def validateHeaderInfo(data: xml.etree.ElementTree.Element):
 
 
 def validateActivityCode(data: xml.etree.ElementTree.Element):
-    code = data.findall("CodigoActividad")[0].text
+    code = data.findall('eInvoiceNameSpace:CodigoActividad', namespaces)[0].text
     if len(code) > 6:
         return "Código de actividad (" + code + ") posee un número de dígitos mayor al permitido (6)"
     else:
@@ -53,13 +58,13 @@ def manageDateSpanValidation(sentDate):
 
 
 def validateSentDate(data: xml.etree.ElementTree.Element):
-    dateStr = data.findall("FechaEmision")[0].text
+    dateStr = data.findall('eInvoiceNameSpace:FechaEmision', namespaces)[0].text
     results = [manageDateTimeFormatValidation(dateStr), manageDateSpanValidation(dateStr)]
     return results
 
 
 def validateSalesCondition(data: xml.etree.ElementTree.Element):
-    ConditionNode = data.findall('.//Emisor/Identificacion')
+    ConditionNode = data.findall('eInvoiceNameSpace:CondicionVenta', namespaces)
     if len(ConditionNode) == 0:
         return "No se encuenta nodo de Condición de venta, el cual es de caracter obligatorio."
     else:
@@ -68,7 +73,7 @@ def validateSalesCondition(data: xml.etree.ElementTree.Element):
 
 def validateSalesConditionNumber(data: xml.etree.ElementTree.Element):
     acceptedConditions = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "99"]  # 02 = Crédito
-    salesConditionNode = data.findall('.//CondicionVenta')[0].text
+    salesConditionNode = data.findall('eInvoiceNameSpace:CondicionVenta', namespaces)[0].text
     if len(salesConditionNode) != 2 or salesConditionNode not in acceptedConditions:
         return "El valor (" + salesConditionNode + ") del nodo 'CondicionVenta' en la sección del encabezado," \
                                                    " no es válido con respecto al catálogo de tipos: " + str(
@@ -78,9 +83,9 @@ def validateSalesConditionNumber(data: xml.etree.ElementTree.Element):
 
 
 def validateSalesCreditTerm(data: xml.etree.ElementTree.Element):
-    salesConditionNode = data.findall('.//CondicionVenta')[0].text
+    salesConditionNode = data.findall('eInvoiceNameSpace:CondicionVenta', namespaces)[0].text
     if salesConditionNode == "02":
-        CreditTermNode = data.findall('.//PlazoCredito')
+        CreditTermNode = data.findall('eInvoiceNameSpace:PlazoCredito', namespaces)
         if len(CreditTermNode) == 0:
             return "No existe Nodo de Plazo de credito en encabezado, el cual es de caracter obligatoeio"
         else:
@@ -91,7 +96,7 @@ def validateSalesCreditTerm(data: xml.etree.ElementTree.Element):
 
 def validateSalesCeditTermFormat(data: xml.etree.ElementTree.Element):
     try:
-        creditTermNode = data.findall('.//PlazoCredito')[0].text
+        creditTermNode = data.findall('eInvoiceNameSpace:PlazoCredito', namespaces)[0].text
         if len(creditTermNode) > 10:
             return "Valor '" + creditTermNode + "' de nodo 'Plazo Crédito' excede límite de caracteres (10). " \
                                                 "Cantidad obtenida: " + str(len(creditTermNode))
@@ -102,7 +107,7 @@ def validateSalesCeditTermFormat(data: xml.etree.ElementTree.Element):
 
 
 def validatePaymentMethod(data: xml.etree.ElementTree.Element):
-    PaymentMethodNode = data.findall('.//MedioPago')
+    PaymentMethodNode = data.findall('eInvoiceNameSpace:MedioPago', namespaces)
     if len(PaymentMethodNode) == 0:
         return "No existe Nodo 'MedioPago' en encabezado, el cual es de caracter obligatorio"
     else:
@@ -112,7 +117,7 @@ def validatePaymentMethod(data: xml.etree.ElementTree.Element):
 def validatePaymentMethodFormat(data: xml.etree.ElementTree.Element):
     acceptedPaymentMethods = ["01", "02", "03", "04", "05", "99"]
     try:
-        paymentMethodNode = data.findall('.//MedioPago')[0].text
+        paymentMethodNode = data.findall('eInvoiceNameSpace:MedioPago', namespaces)[0].text
         if len(paymentMethodNode) > 2 or paymentMethodNode not in acceptedPaymentMethods:
             return "El valor (" + paymentMethodNode + ") del nodo 'MedioPago' en la sección del encabezado " \
                                                       "no es válido con respecto al catálogo de tipos: " + str(
