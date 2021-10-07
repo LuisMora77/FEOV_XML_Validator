@@ -4,48 +4,59 @@ import re
 
 # Expresion regular que solo acepta numeros del 0 al 9.
 REOnlyNumbers = "[0-9]+$"
+namespaces = {'eInvoiceNameSpace': 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'} # add more as needed
 
 # Expresión regular para validar correos (explícitamente obtenida del esquema de hacienda en su versión 4.3)
 REEmailSender = "^\\s*(([^<>()\\[\\]\\.,;:\\s@\\\"]+(\\.[^<>()\\[\\]\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@(([^<>()\\[\\]\\.,;:\\s@\\\"]+\\.)+[^<>()\\[\\]\\.,;:\\s@\\\"]{0,})\\s*$"
 
 
 def validateSenderInfo(data: xml.etree.ElementTree.Element):
-    results = [validateSenderNode(data), validateSenderName(data), validateSenderID(data), validateSenderIDType(data),
-               validateSenderIDNum(data), validateSenderCommercialName(data), validateSenderLocation(data),
-               validateSenderState(data), validateSenderCounty(data), validateSenderCity(data),
-               validateSenderNeighborhood(data), validateSenderOtherSigns(data), validateSenderTelephone(data),
-               validateSenderFax(data), validateSenderEmail(data), validateSenderEmailDetail(data)]
+    senderNode = data.find('eInvoiceNameSpace:Emisor', namespaces)
+    results = [validateSenderNode(senderNode), validateSenderName(senderNode), validateSenderID(senderNode),
+               validateSenderIDType(senderNode), validateSenderIDNum(senderNode),
+               validateSenderCommercialName(senderNode), validateSenderLocation(senderNode),
+               validateSenderState(senderNode), validateSenderCounty(senderNode), validateSenderCity(senderNode),
+               validateSenderNeighborhood(senderNode), validateSenderOtherSigns(senderNode),
+               validateSenderTelephone(senderNode), validateSenderFax(senderNode), validateSenderEmail(senderNode),
+               validateSenderEmailDetail(senderNode)]
     formattedSenderResults = Validator.AuxiliarFunctions.flattenList(results)
     return formattedSenderResults
 
 
-def validateSenderNode(data: xml.etree.ElementTree.Element):
-    EmisorNode = data.findall("Emisor")
-    if len(EmisorNode) == 0:
-        return "No existe Nodo de Emisor en XML"
-    else:
+def validateSenderNode(senderNode):
+    if senderNode:
         return True
+    else:
+        return "No existe Nodo de Emisor en XML"
 
 
-def validateSenderName(data: xml.etree.ElementTree.Element):
-    Name = data.findall('.//Emisor/Nombre')[0].text
+# root = fromstring(xml_text)
+# for actor in root.findall('{http://people.example.com}actor'):
+#     name = actor.find('{http://people.example.com}name')
+#     print(name.text)
+#     for char in actor.findall('{http://characters.example.com}character'):
+#         print(' |-->', char.text)
+
+def validateSenderName(senderNode):
+    Name = senderNode.find('eInvoiceNameSpace:Nombre', namespaces).text
     if len(Name) == 0 or len(Name) > 100:
         return "-25, El nombre del Emisor no puede estar vacío ni exceder los 100 caracteres"
     else:
         return True
 
 
-def validateSenderID(data: xml.etree.ElementTree.Element):
-    IDNode = data.findall('.//Emisor/Identificacion')
-    if len(IDNode) == 0:
-        return "No se encuenta nodo de identificación de Emisor, el cual es de caracter obligatorio."
-    else:
+def validateSenderID(senderNode):
+    IDNode = senderNode.find('eInvoiceNameSpace:Identificacion', namespaces)
+    if IDNode:
         return True
+    else:
+        return "No se encuenta nodo de identificación de Emisor, el cual es de caracter obligatorio."
 
 
-def validateSenderIDType(data: xml.etree.ElementTree.Element):
+def validateSenderIDType(senderNode):
     acceptedIDTypes = ["01", "02", "03", "04"]
-    IDNodeType = data.findall('.//Emisor/Identificacion/Tipo')[0].text
+    idNode = senderNode.find('eInvoiceNameSpace:Identificacion', namespaces)
+    IDNodeType = idNode.find('eInvoiceNameSpace:Tipo', namespaces).text
     if len(IDNodeType) == 0 or len(IDNodeType) > 2:
         return "Tipo de cédula de Emisor no posee el formato adecuado"
     if IDNodeType in acceptedIDTypes:
@@ -55,9 +66,10 @@ def validateSenderIDType(data: xml.etree.ElementTree.Element):
                                            " catálogo de tipos: " + str(acceptedIDTypes)
 
 
-def validateSenderIDNum(data: xml.etree.ElementTree.Element):
-    IDNodeType = data.findall('.//Emisor/Identificacion/Tipo')[0].text
-    IDNumber = data.findall('.//Emisor/Identificacion/Numero')[0].text
+def validateSenderIDNum(senderNode):
+    idNode = senderNode.find('eInvoiceNameSpace:Identificacion', namespaces)
+    idNodeType = idNode.find('eInvoiceNameSpace:Tipo', namespaces).text
+    idNumber = idNode.find('eInvoiceNameSpace:Numero', namespaces).text
     IdTypesCorrespondingFunctions = {
         "01": Validator.AuxiliarFunctions.validatePhysicalID,
         "02": Validator.AuxiliarFunctions.validateLegalID,
@@ -65,25 +77,24 @@ def validateSenderIDNum(data: xml.etree.ElementTree.Element):
         "04": Validator.AuxiliarFunctions.validateNITEID
     }
     try:
-        chosen_operation_function = IdTypesCorrespondingFunctions.get(IDNodeType,
-                                                                      "Recibido tipo de identificación inválido")
-        result = chosen_operation_function(IDNumber)
+        chosen_operation_function = IdTypesCorrespondingFunctions.get(idNodeType,"Recibido tipo de identificación inválido")
+        result = chosen_operation_function(idNumber)
         return result
     except:
         return "No es posible validar el ID del Emisor debido a su tipo."
 
 
-def validateSenderCommercialName(data: xml.etree.ElementTree.Element):
-    CommercialNameNode = data.findall('.//Emisor/NombreComercial')[0].text
-    if len(CommercialNameNode) > 80:
+def validateSenderCommercialName(senderNode):
+    CommercialName = senderNode.find('eInvoiceNameSpace:NombreComercial', namespaces).text
+    if len(CommercialName) > 80:
         return "Excedida cantidad límite de caracteres para nombre comercial de Emisor (Permitido : 80, recibido: " \
-               + str(len(CommercialNameNode)) + ")"
+               + str(len(CommercialName)) + ")"
     else:
         return True
 
 
-def validateSenderLocation(data: xml.etree.ElementTree.Element):
-    LocationNode = data.findall('.//Emisor/Ubicacion')
+def validateSenderLocation(senderNode):
+    LocationNode = senderNode.findall('eInvoiceNameSpace:Ubicacion', namespaces)
     if len(LocationNode) == 0:
         return "No existe Nodo de Ubicacion en XML"
     else:
@@ -91,8 +102,9 @@ def validateSenderLocation(data: xml.etree.ElementTree.Element):
 
 
 # state county city
-def validateSenderState(data: xml.etree.ElementTree.Element):  # Provincia
-    StateNode = data.findall('.//Emisor/Ubicacion/Provincia')[0].text
+def validateSenderState(senderNode):  # Provincia
+    LocationNode = senderNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
+    StateNode = LocationNode.find('eInvoiceNameSpace:Provincia', namespaces).text
     if len(StateNode) != 1 or StateNode.isnumeric() == False:
         return "El nodo de provincia del Emisor no posee la estructura correcta. Solo debe contener un único dígito y" \
                " debe ser un número. (Dato recibido: '" + str(StateNode) + "', número de dígitos: " + str(
@@ -101,8 +113,9 @@ def validateSenderState(data: xml.etree.ElementTree.Element):  # Provincia
         return True
 
 
-def validateSenderCounty(data: xml.etree.ElementTree.Element):  # Canton
-    CountyNode = data.findall('.//Emisor/Ubicacion/Canton')[0].text
+def validateSenderCounty(senderNode):  # Canton
+    LocationNode = senderNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
+    CountyNode = LocationNode.find('eInvoiceNameSpace:Canton', namespaces).text
     if len(CountyNode) != 2 or CountyNode.isnumeric() == False:
         return "El nodo de Canton del Emisor no posee la estructura correcta. Solo debe contener dos dígitos y" \
                " debe ser un número. (Dato recibido: '" + str(CountyNode) + "', número de dígitos: " + str(
@@ -111,8 +124,9 @@ def validateSenderCounty(data: xml.etree.ElementTree.Element):  # Canton
         return True
 
 
-def validateSenderCity(data: xml.etree.ElementTree.Element):  # Distrito
-    CityNode = data.findall('.//Emisor/Ubicacion/Distrito')[0].text
+def validateSenderCity(senderNode):  # Distrito
+    LocationNode = senderNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
+    CityNode = LocationNode.find('eInvoiceNameSpace:Distrito', namespaces).text
     if len(CityNode) != 2 or CityNode.isnumeric() == False:
         return "El nodo de Distrito del Emisor no posee la estructura correcta. Solo debe contener dos dígitos y" \
                " debe ser un número. (Dato recibido: '" + str(CityNode) + "', número de dígitos: " + str(
@@ -121,9 +135,10 @@ def validateSenderCity(data: xml.etree.ElementTree.Element):  # Distrito
         return True
 
 
-def validateSenderNeighborhood(data: xml.etree.ElementTree.Element):  # Barrio
+def validateSenderNeighborhood(senderNode):  # Barrio
     try:
-        NeighborhoodNode = data.findall('.//Emisor/Ubicacion/Barrio')[0].text
+        LocationNode = senderNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
+        NeighborhoodNode = LocationNode.find('eInvoiceNameSpace:Barrio', namespaces).text
         if len(NeighborhoodNode) != 2 or NeighborhoodNode.isnumeric() == False:
             return "El nodo de Barrio del Emisor no posee la estructura correcta. Solo debe contener dos dígitos y" \
                    " debe ser un número. (Dato recibido: '" + str(NeighborhoodNode) + "', número de dígitos: " + str(
@@ -134,29 +149,31 @@ def validateSenderNeighborhood(data: xml.etree.ElementTree.Element):  # Barrio
         return True
 
 
-def validateSenderOtherSigns(data: xml.etree.ElementTree.Element):
-    OtherSigns = data.findall('.//Emisor/Ubicacion/OtrasSenas')
-    if len(OtherSigns) == 0:
+def validateSenderOtherSigns(senderNode):
+    LocationNode = senderNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
+    OtherSignsNode = LocationNode.findall('eInvoiceNameSpace:OtrasSenas', namespaces)
+    OtherSigns = LocationNode.find('eInvoiceNameSpace:OtrasSenas', namespaces).text
+    if len(OtherSignsNode) == 0:
         return "No existe Nodo de Ubicacion en XML"
     else:
-        if len(OtherSigns[0].text) > 250:
+        if len(OtherSigns) > 250:
             return "Excedido límite de caractreres para nodo OtrasSenas de Emisor. (Permitido: 250. Recibido: " + str(
                 len(OtherSigns[0].text)) + ")"
         else:
             return True
 
 
-def validateSenderTelephone(data: xml.etree.ElementTree.Element):  # ***
+def validateSenderTelephone(senderNode):  # ***
     try:
-        data.findall('.//Emisor/Telefono')
-        telephoneResults = [validateSenderTelephoneCountryCode(data), validateSenderTelephoneNumber(data)]
+        TelephoneNode = senderNode.find('eInvoiceNameSpace:Telefono', namespaces)
+        telephoneResults = [validateSenderTelephoneCountryCode(TelephoneNode), validateSenderTelephoneNumber(TelephoneNode)]
         return telephoneResults
     except:
         return True
 
 
-def validateSenderTelephoneCountryCode(data: xml.etree.ElementTree.Element):
-    CountryCode = data.findall('.//Emisor/Telefono/CodigoPais')[0].text
+def validateSenderTelephoneCountryCode(TelephoneNode):
+    CountryCode = TelephoneNode.find('eInvoiceNameSpace:CodigoPais', namespaces).text
     if re.match(REOnlyNumbers, CountryCode) == None or len(CountryCode) != 3:
         return "Formato de código páis de número de teléfono de Emisor no es válido. Solo se permite un máximo de" \
                " 3 Números. (Recibido: " + CountryCode + ")."
@@ -164,8 +181,8 @@ def validateSenderTelephoneCountryCode(data: xml.etree.ElementTree.Element):
         return True
 
 
-def validateSenderTelephoneNumber(data: xml.etree.ElementTree.Element):
-    telephoneNumber = data.findall('.//Emisor/Telefono/NumTelefono')[0].text
+def validateSenderTelephoneNumber(TelephoneNode):
+    telephoneNumber = TelephoneNode.find('eInvoiceNameSpace:NumTelefono', namespaces).text
     if re.match(REOnlyNumbers, telephoneNumber) == None or len(telephoneNumber) > 20:
         return "Formato de número telefónico de Emisor no es válido. Solo se permite un máximo de 20 números." \
                " (Recibido: " + str(telephoneNumber) + ")."
@@ -173,17 +190,17 @@ def validateSenderTelephoneNumber(data: xml.etree.ElementTree.Element):
         return True
 
 
-def validateSenderFax(data: xml.etree.ElementTree.Element):  # ***
+def validateSenderFax(senderNode):  # ***
     try:
-        data.findall('.//Emisor/Fax')
-        faxResults = [validateSenderTelephoneCountryCode(data), validateSenderTelephoneNumber(data)]
+        faxNode = senderNode.find('eInvoiceNameSpace:Fax', namespaces)
+        faxResults = [validateSenderTelephoneCountryCode(faxNode), validateSenderTelephoneNumber(faxNode)]
         return faxResults
     except:
         return True
 
 
-def validateSenderFaxCountryCode(data: xml.etree.ElementTree.Element):
-    CountryCode = data.findall('.//Emisor/Fax/CodigoPais')[0].text
+def validateSenderFaxCountryCode(faxNode):
+    CountryCode = faxNode.find('eInvoiceNameSpace:CodigoPais', namespaces).text
     if re.match(REOnlyNumbers, CountryCode) == None or len(CountryCode) != 3:
         return "Formato de código páis de número de teléfono de Emisor no es válido. Solo se permite un máximo de" \
                " 3 Números. (Recibido: " + CountryCode + ")."
@@ -191,8 +208,8 @@ def validateSenderFaxCountryCode(data: xml.etree.ElementTree.Element):
         return True
 
 
-def validateSenderFaxNumber(data: xml.etree.ElementTree.Element):
-    FaxNumber = data.findall('.//Emisor/Fax/NumTelefono')[0].text
+def validateSenderFaxNumber(faxNode):
+    FaxNumber = faxNode.find('eInvoiceNameSpace:NumTelefono', namespaces).text
     if re.match(REOnlyNumbers, FaxNumber) == None or len(FaxNumber) > 20:
         return "Formato de número telefónico de Emisor no es válido. Solo se permite un máximo de 20 números." \
                " (Recibido: " + str(FaxNumber) + ")."
@@ -200,23 +217,18 @@ def validateSenderFaxNumber(data: xml.etree.ElementTree.Element):
         return True
 
 
-def validateSenderEmail(data: xml.etree.ElementTree.Element):
-    EmailNode = data.findall('.//Emisor/CorreoElectronico')
+def validateSenderEmail(senderNode):
+    EmailNode = senderNode.findall('eInvoiceNameSpace:CorreoElectronico', namespaces)
     if len(EmailNode) == 0:
         return "No se encuenta nodo de Correo Electronico de Emisor, el cual es de caracter obligatorio."
     else:
         return True
 
 
-def validateSenderEmailDetail(data: xml.etree.ElementTree.Element):
-    EmailNode = data.findall('.//Emisor/CorreoElectronico')[0].text
+def validateSenderEmailDetail(senderNode):
+    EmailNode = senderNode.find('eInvoiceNameSpace:CorreoElectronico', namespaces).text
     if re.match(REEmailSender, EmailNode) == None or len(EmailNode) > 160:
         return "Formato de Correo Electronico de Emisor no es válido. (Recibido: " + EmailNode + ")"
     else:
         return True
 
-# def validateSubNodes(root,ParentNodeName):
-#    ParentNodePath = './/' + ParentNodeName +  '/*'
-#    childTags = [t.tag for t in root.findall(ParentNodePath)]
-#    for childNode in childTags:
-#        print("ChildNode: " + childNode)

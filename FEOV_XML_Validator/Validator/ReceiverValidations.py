@@ -154,7 +154,7 @@ def validateReceiverTelephone(data: xml.etree.ElementTree.Element):  # ***
 
 def validateReceiverTelephoneCountryCode(data: xml.etree.ElementTree.Element):
     CountryCode = data.findall('.//Receptor/Telefono/CodigoPais')[0].text
-    if re.match(REOnlyNumbers, CountryCode) == False or len(CountryCode) != 3:
+    if re.match(REOnlyNumbers, CountryCode) == None or len(CountryCode) != 3:
         return "Formato de código páis de número de teléfono de Receptor no es válido. Solo se permite un máximo de" \
                " 3 Números. (Recibido: " + CountryCode + ")."
     else:
@@ -163,7 +163,7 @@ def validateReceiverTelephoneCountryCode(data: xml.etree.ElementTree.Element):
 
 def validateReceiverTelephoneNumber(data: xml.etree.ElementTree.Element):
     telephoneNumber = data.findall('.//Receptor/Telefono/NumTelefono')[0].text
-    if re.match(REOnlyNumbers, telephoneNumber) == False or len(telephoneNumber) > 20:
+    if re.match(REOnlyNumbers, telephoneNumber) == None or len(telephoneNumber) > 20:
         return "Formato de número telefónico de Receptor no es válido. Solo se permite un máximo de 20 números." \
                " (Recibido: " + str(telephoneNumber) + ")."
     else:
@@ -190,7 +190,7 @@ def validateReceiverFaxCountryCode(data: xml.etree.ElementTree.Element):
 
 def validateReceiverFaxNumber(data: xml.etree.ElementTree.Element):
     FaxNumber = data.findall('.//Receptor/Fax/NumTelefono')[0].text
-    if re.match(REOnlyNumbers, FaxNumber) == False or len(FaxNumber) > 20:
+    if re.match(REOnlyNumbers, FaxNumber) == None or len(FaxNumber) > 20:
         return "Formato de número telefónico de Receptor no es válido. Solo se permite un máximo de 20 números." \
                " (Recibido: " + str(FaxNumber) + ")."
     else:
