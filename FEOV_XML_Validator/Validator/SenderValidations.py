@@ -30,12 +30,6 @@ def validateSenderNode(senderNode):
         return "No existe Nodo de Emisor en XML"
 
 
-# root = fromstring(xml_text)
-# for actor in root.findall('{http://people.example.com}actor'):
-#     name = actor.find('{http://people.example.com}name')
-#     print(name.text)
-#     for char in actor.findall('{http://characters.example.com}character'):
-#         print(' |-->', char.text)
 
 def validateSenderName(senderNode):
     Name = senderNode.find('eInvoiceNameSpace:Nombre', namespaces).text
@@ -57,13 +51,11 @@ def validateSenderIDType(senderNode):
     acceptedIDTypes = ["01", "02", "03", "04"]
     idNode = senderNode.find('eInvoiceNameSpace:Identificacion', namespaces)
     IDNodeType = idNode.find('eInvoiceNameSpace:Tipo', namespaces).text
-    if len(IDNodeType) == 0 or len(IDNodeType) > 2:
-        return "Tipo de cédula de Emisor no posee el formato adecuado"
-    if IDNodeType in acceptedIDTypes:
-        return True
-    else:
-        return "El valor (" + IDNodeType + ") del nodo 'Tipo' en la sección del Emisor, no es válido con respecto al" \
+    if len(IDNodeType) == 0 or len(IDNodeType) > 2 or IDNodeType not in acceptedIDTypes:
+        return "El valor '" + IDNodeType + "' del nodo 'Tipo' en la sección del Emisor, no es válido con respecto al" \
                                            " catálogo de tipos: " + str(acceptedIDTypes)
+    else:
+        return True
 
 
 def validateSenderIDNum(senderNode):
