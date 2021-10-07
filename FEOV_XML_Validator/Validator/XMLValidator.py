@@ -38,9 +38,9 @@ def validateXML(path, xmlType: int):
 def validatePUXml(data: xml.etree.ElementTree.Element):
 
     result = [Validator.HeaderValidations.validateHeaderInfo(data),#,
-              Validator.SenderValidations.validateSenderInfo(data)]#,
-              #Validator.ReceiverValidations.validateReceiverInfo(data),
-              #Validator.DetailsValidations.validateDetailsInfo(data),
+              Validator.SenderValidations.validateSenderInfo(data),
+              Validator.ReceiverValidations.validateReceiverInfo(data),
+              Validator.DetailsValidations.validateDetailsInfo(data)]#,
               #Validator.TotalsValidations.validateTotalsInfo(data)]
 
     flat_list = Validator.AuxiliarFunctions.flattenList(result)

@@ -4,7 +4,9 @@ import re
 
 # Expresion regular que solo acepta numeros del 0 al 9.
 REOnlyNumbers = "[0-9]+$"
-namespaces = {'eInvoiceNameSpace': 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'} # add more as needed
+
+# Namespace necesario al momento de obtener un nodo, sin esto no se pueden leer los datos del nodo.
+namespaces = {'eInvoiceNameSpace': 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'}
 
 # Expresión regular para validar correos (explícitamente obtenida del esquema de hacienda en su versión 4.3)
 REEmailSender = "^\\s*(([^<>()\\[\\]\\.,;:\\s@\\\"]+(\\.[^<>()\\[\\]\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@(([^<>()\\[\\]\\.,;:\\s@\\\"]+\\.)+[^<>()\\[\\]\\.,;:\\s@\\\"]{0,})\\s*$"

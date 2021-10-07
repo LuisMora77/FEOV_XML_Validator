@@ -4,7 +4,10 @@ import re
 
 # Expresion regular que solo acepta numeros del 0 al 9.
 REOnlyNumbers = "[0-9]+$"
-namespaces = {'eInvoiceNameSpace': 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'} # add more as needed
+
+# Namespace necesario al momento de obtener un nodo, sin esto no se pueden leer los datos del nodo.
+namespaces = {'eInvoiceNameSpace': 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'}
+
 # Expresión regular para validar correos (explícitamente obtenida del esquema de hacienda en su versión 4.3)
 REEmailReceiver = "^\\s*(([^<>()\\[\\]\\.,;:\\s@\\\"]+(\\.[^<>()\\[\\]\\.,;:\\s@\\\"]+)*)|(\\\".+\\\"))@(([^<>()\\[\\]\\.,;:\\s@\\\"]+\\.)+[^<>()\\[\\]\\.,;:\\s@\\\"]{0,})\\s*$"
 
@@ -54,7 +57,7 @@ def validateReceiverID(receiverNode):
 
 def validateReceiverIDType(receiverNode):
     acceptedIDTypes = ["01", "02", "03", "04"]
-    IDNode = receiverNode.find('eInvoiceNameSpace:Identificacion', namespaces).text
+    IDNode = receiverNode.find('eInvoiceNameSpace:Identificacion', namespaces)
     IDNodeType = IDNode.find('eInvoiceNameSpace:Tipo', namespaces).text
     if len(IDNodeType) == 0 or len(IDNodeType) > 2 or IDNodeType not in acceptedIDTypes:
         return "El valor '" + IDNodeType + "' del nodo 'Tipo' en la sección del Receptor, no es válido con respecto " \
@@ -151,9 +154,9 @@ def validateReceiverOtherSigns(receiverNode):
     if len(OtherSigns) == 0:
         return "No existe Nodo de Ubicacion en XML"
     else:
-        if len(OtherSigns[0].text) > 250:
+        if len(OtherSigns) > 250:
             return "Excedido límite de caractreres para nodo OtrasSenas de Receptor. (Permitido: 250. Recibido: " + str(
-                len(OtherSigns[0].text)) + ")"
+                len(OtherSigns)) + ")"
         else:
             return True
 
@@ -213,7 +216,7 @@ def validateReceiverFaxNumber(receiverNode):
 
 
 def validateReceiverEmail(receiverNode):
-    EmailNode = receiverNode.find('.//Receptor/CorreoElectronico')
+    EmailNode = receiverNode.findall('eInvoiceNameSpace:CorreoElectronico', namespaces)
     if len(EmailNode) == 0:
         return "No se encuenta nodo de Correo Electronico de Receptor, el cual es de caracter olbigatorio."
     else:
@@ -221,7 +224,7 @@ def validateReceiverEmail(receiverNode):
 
 
 def validateReceiverEmailDetail(receiverNode):
-    EmailNode = receiverNode.findall('eInvoiceNameSpace:CorreoElectronico', namespaces).text
+    EmailNode = receiverNode.find('eInvoiceNameSpace:CorreoElectronico', namespaces).text
     if re.match(REEmailReceiver, EmailNode) == None or len(EmailNode) > 160:
         return "Formato de Correo Electronico de Receptor no es válido. (Recibido: " + EmailNode + ")"
     else:
