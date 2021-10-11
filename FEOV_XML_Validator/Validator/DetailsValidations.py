@@ -177,9 +177,8 @@ def validateTotalAmount(data, LineNum):
 
 
 def validateDiscount(data, LineNum):
-    try:
-        discountNode = data.find('eInvoiceNameSpace:Descuento', namespaces)
-    except:
+    discountNode = data.find('eInvoiceNameSpace:Descuento', namespaces)
+    if(discountNode == None):
         return True
     try:
         discountAmountNode = discountNode.find('eInvoiceNameSpace:MontoDescuento', namespaces).text
@@ -195,9 +194,8 @@ def validateDiscount(data, LineNum):
 
 
 def validateDiscountReason(data, LineNum):
-    try:
-        discountNode = data.find('eInvoiceNameSpace:Descuento', namespaces)
-    except:
+    discountNode = data.find('eInvoiceNameSpace:Descuento', namespaces)
+    if discountNode == None:
         return True
     try:
         discountReasonNode = discountNode.find('eInvoiceNameSpace:NaturalezaDescuento', namespaces).text
@@ -320,13 +318,9 @@ def validateAmount(data, LineNum):
 
 
 def validateExonerationDocumentType(data, LineNum):
-    try:
-        taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
-    except:
-        return True
-    try:
-        exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    except:
+    taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
+    if taxNode == None or exonerationNode == None:
         return True
     acceptedTypes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "99"]
     try:
@@ -343,13 +337,9 @@ def validateExonerationDocumentType(data, LineNum):
 
 
 def validateDocNumber(data, LineNum):
-    try:
-        taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
-    except:
-        return True
-    try:
-        exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    except:
+    taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
+    if taxNode == None or exonerationNode == None:
         return True
     try:
         docNum = exonerationNode.find('eInvoiceNameSpace:NumeroDocumento', namespaces).text
@@ -364,16 +354,12 @@ def validateDocNumber(data, LineNum):
 
 
 def validateInstitutionName(data, LineNum):
-    try:
-        taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
-    except:
+    taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
+    if taxNode == None or exonerationNode == None:
         return True
     try:
-        exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    except:
-        return True
-    try:
-        instName = data.findall('eInvoiceNameSpace:NombreInstitucion', namespaces).text
+        instName = data.find('eInvoiceNameSpace:NombreInstitucion', namespaces).text
         if len(instName) > 160:
             return " Valor de nodo 'NombreInstitucion' en sección 'DetalleServicio/LineaDetalle/Impuesto/" \
                    " Exoneracion/NombreInstitucion', línea " + str(LineNum + 1) + " no posee un formato válido" \
@@ -386,13 +372,9 @@ def validateInstitutionName(data, LineNum):
 
 
 def validateSentDate(data, LineNum):
-    try:
-        taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
-    except:
-        return True
-    try:
-        exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    except:
+    taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
+    if taxNode == None or exonerationNode == None:
         return True
     try:
         dateNode = exonerationNode.find('eInvoiceNameSpace:FechaEmision', namespaces).text
@@ -404,13 +386,9 @@ def validateSentDate(data, LineNum):
 
 
 def validateExemptionPercentage(data, LineNum):
-    try:
-        taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
-    except:
-        return True
-    try:
-        exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    except:
+    taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
+    if taxNode == None or exonerationNode == None:
         return True
     try:
         ExemptionNode = exonerationNode.find('eInvoiceNameSpace:PorcentajeExoneracion', namespaces).text
@@ -425,13 +403,9 @@ def validateExemptionPercentage(data, LineNum):
 
 
 def validateExemptionAmount(data, LineNum):
-    try:
-        taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
-    except:
-        return True
-    try:
-        exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    except:
+    taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
+    if taxNode == None or exonerationNode == None:
         return True
     try:
         ExemptionAmountNode = exonerationNode.find('eInvoiceNameSpace:MontoExoneracion', namespaces).text
@@ -448,21 +422,21 @@ def validateExemptionAmount(data, LineNum):
 
 
 def validateNetTax(data, LineNum):
-    try:
-        netTaxNode = data.find('eInvoiceNameSpace:ImpuestoNeto', namespaces)
-        try:
-            netTaxStr = netTaxNode.text
-            isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(netTaxStr, 18, 5)
-            if not isValidDecimal:
-                return "Valor de nodo 'ImpuestoNeto' en sección 'DetalleServicio/LineaDetalle', línea " \
-                       + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales. Recibido: "\
-                       + netTaxStr + ")"
-            else:
-                return True
-        except:
-            return "Valor de nodo 'ImpuestoNeto' en sección 'DetalleServicio/LineaDetalle, no puede ser vacío."
-    except:
+    netTaxNode = data.find('eInvoiceNameSpace:ImpuestoNeto', namespaces)
+    if netTaxNode == None:
         return "No se encuenta nodo 'ImpuestoNeto' en lineaDetalle " + LineNum + ", el cual es de caracter obligatorio."
+    try:
+        netTaxStr = netTaxNode.text
+        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(netTaxStr, 18, 5)
+        if not isValidDecimal:
+            return "Valor de nodo 'ImpuestoNeto' en sección 'DetalleServicio/LineaDetalle', línea " \
+                   + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales. Recibido: "\
+                   + netTaxStr + ")"
+        else:
+            return True
+    except:
+        return "Valor de nodo 'ImpuestoNeto' en sección 'DetalleServicio/LineaDetalle, no puede ser vacío."
+
 
 
 def validateTotalLineAmount(data, LineNum):
@@ -485,95 +459,95 @@ def validateTotalLineAmount(data, LineNum):
 
 
 def validateOtherChargesDocuemntType(data, LineNum):
-    try:
-        acceptedDocTypes = ["01", "02", "03", "04", "05", "06", "07", "99"]
-        otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
-        try:
-            OCDocTypeNode = otherChargesNode.find('eInvoiceNameSpace:TipoDocumento', namespaces).text
-            if len(OCDocTypeNode) != 2 or OCDocTypeNode not in acceptedDocTypes:
-                return " Valor de nodo 'TipoDocumento' en sección 'OtrosCargos', línea " + str(LineNum + 1) + \
-                       " no posee un formato válido (2 caracteres) o no es válido con respecto" \
-                       " al catalogo de tipos: " + str(acceptedDocTypes)
-            else:
-                return True
-        except:
-            return "Valor de nodo 'TipoDocumento' en sección './/OtrosCargos, no puede ser vacío."
-    except:
+    acceptedDocTypes = ["01", "02", "03", "04", "05", "06", "07", "99"]
+    otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
+    if otherChargesNode == None:
         return True
+    try:
+        OCDocTypeNode = otherChargesNode.find('eInvoiceNameSpace:TipoDocumento', namespaces).text
+        if len(OCDocTypeNode) != 2 or OCDocTypeNode not in acceptedDocTypes:
+            return " Valor de nodo 'TipoDocumento' en sección 'OtrosCargos', línea " + str(LineNum + 1) + \
+                   " no posee un formato válido (2 caracteres) o no es válido con respecto" \
+                   " al catalogo de tipos: " + str(acceptedDocTypes)
+        else:
+            return True
+    except:
+        return "Valor de nodo 'TipoDocumento' en sección './/OtrosCargos, no puede ser vacío."
+
 
 
 def validateThirdPartysName(data, LineNum):
-    try:
-        otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
-        try:
-            OCDocTypeNode = otherChargesNode.find('eInvoiceNameSpace:TipoDocumento', namespaces).text
-            if OCDocTypeNode == "04":
-                try:
-                    nameNode = otherChargesNode.findall('eInvoiceNameSpace:NombreTercero', namespaces).text
-                    if len(nameNode) > 100:
-                        return " Valor de nodo 'NombreTercero' en sección 'OtrosCargos', línea " \
-                               + str(LineNum + 1) + " no posee un formato válido (máximo 100 caracteres, caracteres" \
-                               " recibidos: " + str(len(nameNode)) + ")"
-                    else:
-                        return True
-                except:
-                    return "Valor de nodo 'NombreTercero' en sección './/OtrosCargos, no puede ser vacío."
-            else:
-                return True
-        except:
-            return "Valor de nodo 'TipoDocumento' en sección './/OtrosCargos, no puede ser vacío."
-    except:
+    otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
+    if otherChargesNode == None:
         return True
+    try:
+        OCDocTypeNode = otherChargesNode.find('eInvoiceNameSpace:TipoDocumento', namespaces).text
+        if OCDocTypeNode == "04":
+            try:
+                nameNode = otherChargesNode.findall('eInvoiceNameSpace:NombreTercero', namespaces).text
+                if len(nameNode) > 100:
+                    return " Valor de nodo 'NombreTercero' en sección 'OtrosCargos', línea " \
+                           + str(LineNum + 1) + " no posee un formato válido (máximo 100 caracteres, caracteres" \
+                           " recibidos: " + str(len(nameNode)) + ")"
+                else:
+                    return True
+            except:
+                return "Valor de nodo 'NombreTercero' en sección './/OtrosCargos, no puede ser vacío."
+        else:
+            return True
+    except:
+        return "Valor de nodo 'TipoDocumento' en sección './/OtrosCargos, no puede ser vacío."
+
 
 
 def validateOCDetail(data, LineNum):
-    try:
-        otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
-        try:
-            detailsNode = data.find('eInvoiceNameSpace:Detalle', namespaces).text
-            if len(detailsNode) > 160:
-                return " Valor de nodo 'Detalle' en sección 'OtrosCargos', línea " \
-                       + str(LineNum + 1) + " no posee un formato válido (máximo 160 caracteres, caracteres" \
-                       " recibidos: " + str(len(detailsNode)) + ")"
-            else:
-                return True
-        except:
-            return "Valor de nodo 'Detalle' en sección './/OtrosCargos, no puede ser vacío."
-    except:
+    otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
+    if otherChargesNode == None:
         return True
+    try:
+        detailsNode = data.find('eInvoiceNameSpace:Detalle', namespaces).text
+        if len(detailsNode) > 160:
+            return " Valor de nodo 'Detalle' en sección 'OtrosCargos', línea " \
+                   + str(LineNum + 1) + " no posee un formato válido (máximo 160 caracteres, caracteres" \
+                   " recibidos: " + str(len(detailsNode)) + ")"
+        else:
+            return True
+    except:
+        return "Valor de nodo 'Detalle' en sección './/OtrosCargos, no puede ser vacío."
+
 
 
 def validateOCPercent(data, LineNum):
-    try:
-        otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
-        try:
-            percentageNode = otherChargesNode.find('eInvoiceNameSpace:Porcentaje', namespaces).text
-            isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(percentageNode, 9, 5)
-            if not isValidDecimal:
-                return " Valor de nodo 'Porcentaje' en sección 'OtrosCargos', línea " \
-                       + str(LineNum + 1) + " no posee un formato válido (9 enteros (máximo), 5 decimales. Recibido: " \
-                       + percentageNode + ")"
-            else:
-                return True
-        except:
-            return "Valor de nodo 'Porcentaje' en sección './/OtrosCargos, no puede ser vacío."
-    except:
+    otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
+    if otherChargesNode == None:
         return True
+    try:
+        percentageNode = otherChargesNode.find('eInvoiceNameSpace:Porcentaje', namespaces).text
+        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(percentageNode, 9, 5)
+        if not isValidDecimal:
+            return " Valor de nodo 'Porcentaje' en sección 'OtrosCargos', línea " \
+                   + str(LineNum + 1) + " no posee un formato válido (9 enteros (máximo), 5 decimales. Recibido: " \
+                   + percentageNode + ")"
+        else:
+            return True
+    except:
+        return "Valor de nodo 'Porcentaje' en sección './/OtrosCargos, no puede ser vacío."
+
 
 
 def validateChargeAmount(data, LineNum):
-    try:
-        otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
-        try:
-            chargeNode = otherChargesNode.find('eInvoiceNameSpace:MontoCargo', namespaces).text
-            isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(chargeNode, 18, 5)
-            if not isValidDecimal:
-                return " Valor de nodo 'MontoCargo' en sección 'OtrosCargos', línea " \
-                       + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales." \
-                       " Recibido: " + chargeNode + ")"
-            else:
-                return True
-        except:
-            return "Valor de nodo 'MontoCargo' en sección './/OtrosCargos, no puede ser vacío."
-    except:
+    otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
+    if otherChargesNode == None:
         return True
+    try:
+        chargeNode = otherChargesNode.find('eInvoiceNameSpace:MontoCargo', namespaces).text
+        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(chargeNode, 18, 5)
+        if not isValidDecimal:
+            return " Valor de nodo 'MontoCargo' en sección 'OtrosCargos', línea " \
+                   + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales." \
+                   " Recibido: " + chargeNode + ")"
+        else:
+            return True
+    except:
+        return "Valor de nodo 'MontoCargo' en sección './/OtrosCargos, no puede ser vacío."
+

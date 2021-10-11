@@ -36,5 +36,5 @@ variable = "fe@grupointeca.com"
 #cmer_OV_01811248_v2
 if __name__ == '__main__':
     #checkString("YaaA3")
-    run("//gishared/ServidordeArchivos/Documentos por Area/Factura Electronica/OV/cmer_OV_01811248_v2.xml", 0)
+    run("//gishared/ServidordeArchivos/Documentos por Area/Factura Electronica/OV/CMER_OV_01790907_CMER-003350415_Signed.xml", 0)
 

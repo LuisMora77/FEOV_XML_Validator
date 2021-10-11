@@ -2,6 +2,8 @@ import Validator.AuxiliarFunctions
 import xml.etree.ElementTree
 import re
 
+# Namespace necesario al momento de obtener un nodo, sin esto no se pueden leer los datos del nodo.
+namespaces = {'eInvoiceNameSpace': 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'}
 alphabetRegex = "^[a-zA-Z]+$"
 totalNodesNames = ["TotalServGravados", "TotalServExentos", "TotalServExonerado", "TotalMercanciasGravadas",
                    "TotalMercanciasExentas", "TotalMercExonerada", "TotalGravado", "TotalExento", "TotalExonerado",
@@ -10,18 +12,29 @@ totalNodesNames = ["TotalServGravados", "TotalServExentos", "TotalServExonerado"
 
 
 def validateTotalsInfo(data: xml.etree.ElementTree.Element):
-    results = validateTotals(data, totalNodesNames)
-    results.append(validateCurrencyCode(data))
-    results.append(validateExchangeRate(data))
+    einviceSummaryNode = data.find('eInvoiceNameSpace:ResumenFactura', namespaces)
+    results = validateTotals(einviceSummaryNode, totalNodesNames, data)
+    results.append(validateCurrencyCode(einviceSummaryNode))
+    results.append(validateExchangeRate(einviceSummaryNode))
     formattedTotalsResults = Validator.AuxiliarFunctions.flattenList(results)
     return formattedTotalsResults
 
 
-def validateTotals(data: xml.etree.ElementTree.Element, nodesList):
+def checkOtherChargesNode(data, nodesList):
+    otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
+    if otherChargesNode == None:
+        nodesList.remove("TotalOtrosCargos")
+    return nodesList
+
+
+
+
+def validateTotals(einviceSummaryNode, nodesList,data):
     results = []
-    for nodeName in nodesList:
+    finalNodeList = checkOtherChargesNode(data,nodesList)
+    for nodeName in finalNodeList:
         try:
-            totalNode = data.findall(".//ResumenFactura/" + nodeName)[0].text
+            totalNode = einviceSummaryNode.find('eInvoiceNameSpace:' + nodeName, namespaces).text
             isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
             if not isValidDecimal:
                 return "Valor de nodo '" + nodeName + "' en sección './/ResumenFactura , no posee un " \
@@ -34,11 +47,12 @@ def validateTotals(data: xml.etree.ElementTree.Element, nodesList):
 
 def validateCurrencyCode(data: xml.etree.ElementTree.Element):
     try:
-        currencyCodeNode = data.findall(".//ResumenFactura/CodigoTipoMoneda/CodigoMondeda")[0].text
+        currencyCodeTypeNode = data.find('eInvoiceNameSpace:CodigoTipoMoneda', namespaces)
+        currencyCodeNode = currencyCodeTypeNode.find('eInvoiceNameSpace:CodigoMoneda', namespaces).text
         checkOnlyLetters = re.match(alphabetRegex, currencyCodeNode)
         if len(currencyCodeNode) != 3 or checkOnlyLetters == None:
-            return "Valor de nodo 'CodigoMondeda' en sección './/ResumenFactura/CodigoTipoMoneda, no posee un " \
-                                  "formato válido (3 letras)."
+            return " Valor de nodo 'CodigoMondeda' en sección './/ResumenFactura/CodigoTipoMoneda, no posee un" \
+                   " formato válido (3 letras)."
         else:
             return True
     except:
@@ -47,7 +61,8 @@ def validateCurrencyCode(data: xml.etree.ElementTree.Element):
 
 def validateExchangeRate(data: xml.etree.ElementTree.Element):
     try:
-        ExchangeRateNode = data.findall(".//ResumenFactura/CodigoTipoMoneda/TipoCambio")[0].text
+        currencyCodeTypeNode = data.find('eInvoiceNameSpace:CodigoTipoMoneda', namespaces)
+        ExchangeRateNode = currencyCodeTypeNode.find('eInvoiceNameSpace:TipoCambio', namespaces).text
         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(ExchangeRateNode, 18, 5)
         if not isValidDecimal:
             return "Valor de nodo 'TipoCambio' en sección './/ResumenFactura/CodigoTipoMoneda, no posee un " \
