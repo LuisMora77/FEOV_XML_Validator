@@ -27,18 +27,16 @@ def checkOtherChargesNode(data, nodesList):
     return nodesList
 
 
-
-
-def validateTotals(einviceSummaryNode, nodesList,data):
+def validateTotals(einviceSummaryNode, nodesList, data):
     results = []
-    finalNodeList = checkOtherChargesNode(data,nodesList)
+    finalNodeList = checkOtherChargesNode(data, nodesList)
     for nodeName in finalNodeList:
         try:
             totalNode = einviceSummaryNode.find('eInvoiceNameSpace:' + nodeName, namespaces).text
             isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
             if not isValidDecimal:
-                return "Valor de nodo '" + nodeName + "' en sección './/ResumenFactura , no posee un " \
-                       "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
+                results.append(" Valor de nodo '" + nodeName + "' en sección './/ResumenFactura , no posee un formato"
+                               " válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")")
             else:
                 results.append(True)
         except:
@@ -71,159 +69,3 @@ def validateExchangeRate(data: xml.etree.ElementTree.Element):
             return True
     except:
         return "Valor de nodo 'TipoCambio' en sección './/ResumenFactura/CodigoTipoMoneda, no puede ser vacío."
-
-
-# def validateTaxedServicesTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalServGravados")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalServGravados' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalServGravados' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateExentServicesTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalServExentos")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalServExentos' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalServExentos' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateExoneratedServicesTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalServExonerado")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalServExonerado' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalServExonerado' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateTaxedArticlesTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalMercanciasGravadas")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalMercanciasGravadas' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalMercanciasGravadas' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateExentArticlesTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalMercanciasExentas")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalMercanciasExentas' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalMercanciasExentas' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateExoneratedArticlesTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalMercExonerada")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalMercExonerada' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalMercExonerada' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateTaxedTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalGravado")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalGravado' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalGravado' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateExentTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalExento")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalExento' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalExento' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateExoneratedTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalExonerado")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalExonerado' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalExonerado' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateSalesTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalVenta")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalVenta' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalVenta' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateDiscountsTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalDescuentos")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalDescuentos' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalDescuentos' en sección './/ResumenFactura, no puede ser vacío."
-#
-#
-# def validateNetSalesTotal(data: xml.etree.ElementTree.Element):
-#     try:
-#         totalNode = data.findall(".//ResumenFactura/TotalVentaNeta")[0].text
-#         isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
-#         if not isValidDecimal:
-#             return "Valor de nodo 'TotalVentaNeta' en sección './/ResumenFactura , no posee un " \
-#                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")"
-#         else:
-#             return True
-#     except:
-#         return "Valor de nodo 'TotalVentaNeta' en sección './/ResumenFactura, no puede ser vacío."

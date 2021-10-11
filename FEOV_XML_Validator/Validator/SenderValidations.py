@@ -34,11 +34,14 @@ def validateSenderNode(senderNode):
 
 
 def validateSenderName(senderNode):
-    Name = senderNode.find('eInvoiceNameSpace:Nombre', namespaces).text
-    if len(Name) == 0 or len(Name) > 100:
-        return "-25, El nombre del Emisor no puede estar vacío ni exceder los 100 caracteres"
-    else:
-        return True
+    try:
+        Name = senderNode.find('eInvoiceNameSpace:Nombre', namespaces).text
+        if len(Name) == 0 or len(Name) > 100:
+            return "-25, El nombre del Emisor no puede estar vacío ni exceder los 100 caracteres"
+        else:
+            return True
+    except:
+        return "Nodo 'Nombre' de sección de Emisor no puede ser vacío."
 
 
 def validateSenderID(senderNode):
@@ -52,12 +55,17 @@ def validateSenderID(senderNode):
 def validateSenderIDType(senderNode):
     acceptedIDTypes = ["01", "02", "03", "04"]
     idNode = senderNode.find('eInvoiceNameSpace:Identificacion', namespaces)
-    IDNodeType = idNode.find('eInvoiceNameSpace:Tipo', namespaces).text
-    if len(IDNodeType) == 0 or len(IDNodeType) > 2 or IDNodeType not in acceptedIDTypes:
-        return "El valor '" + IDNodeType + "' del nodo 'Tipo' en la sección del Emisor, no es válido con respecto al" \
+    if idNode == None:
+        return "Factura no posee nodo 'Identificacion', por lo que no se puede evaluar el tipo de identificación."
+    try:
+        IDNodeType = idNode.find('eInvoiceNameSpace:Tipo', namespaces).text
+        if len(IDNodeType) == 0 or len(IDNodeType) > 2 or IDNodeType not in acceptedIDTypes:
+            return "El valor '" + IDNodeType + "' del nodo 'Tipo' en la sección del Emisor, no es válido con respecto al" \
                                            " catálogo de tipos: " + str(acceptedIDTypes)
-    else:
-        return True
+        else:
+            return True
+    except:
+        return "Nodo 'Tipo' en sección Emisor/Identificacion no puede ser vacío."
 
 
 def validateSenderIDNum(senderNode):
@@ -75,17 +83,19 @@ def validateSenderIDNum(senderNode):
         result = chosen_operation_function(idNumber)
         return result
     except:
-        return "No es posible validar el ID del Emisor debido a su tipo."
+        return "No es posible validar el ID del Emisor debido a su tipo o por tener nodo 'Numero' vacío."
 
 
 def validateSenderCommercialName(senderNode):
-    CommercialName = senderNode.find('eInvoiceNameSpace:NombreComercial', namespaces).text
-    if len(CommercialName) > 80:
-        return "Excedida cantidad límite de caracteres para nombre comercial de Emisor (Permitido : 80, recibido: " \
+    try:
+        CommercialName = senderNode.find('eInvoiceNameSpace:NombreComercial', namespaces).text
+        if len(CommercialName) > 80:
+            return "Excedida cantidad límite de caracteres para nombre comercial de Emisor (Permitido : 80, recibido: " \
                + str(len(CommercialName)) + ")"
-    else:
-        return True
-
+        else:
+            return True
+    except:
+        return "Nodo 'NombreComercial' en sección de Emisor no puede ser vacío."
 
 def validateSenderLocation(senderNode):
     LocationNode = senderNode.findall('eInvoiceNameSpace:Ubicacion', namespaces)
@@ -98,36 +108,43 @@ def validateSenderLocation(senderNode):
 # state county city
 def validateSenderState(senderNode):  # Provincia
     LocationNode = senderNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
-    StateNode = LocationNode.find('eInvoiceNameSpace:Provincia', namespaces).text
-    if len(StateNode) != 1 or StateNode.isnumeric() == False:
-        return "El nodo de provincia del Emisor no posee la estructura correcta. Solo debe contener un único dígito y" \
+    try:
+        StateNode = LocationNode.find('eInvoiceNameSpace:Provincia', namespaces).text
+        if len(StateNode) != 1 or StateNode.isnumeric() == False:
+            return "El nodo de provincia del Emisor no posee la estructura correcta. Solo debe contener un único dígito y" \
                " debe ser un número. (Dato recibido: '" + str(StateNode) + "', número de dígitos: " + str(
-            len(StateNode)) + ")"
-    else:
-        return True
-
+                len(StateNode)) + ")"
+        else:
+            return True
+    except:
+        return "Nodo 'Provincia' en sección de Emisor no puede ser vacío."
 
 def validateSenderCounty(senderNode):  # Canton
     LocationNode = senderNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
     CountyNode = LocationNode.find('eInvoiceNameSpace:Canton', namespaces).text
-    if len(CountyNode) != 2 or CountyNode.isnumeric() == False:
-        return "El nodo de Canton del Emisor no posee la estructura correcta. Solo debe contener dos dígitos y" \
+    try:
+        if len(CountyNode) != 2 or CountyNode.isnumeric() == False:
+            return "El nodo de Canton del Emisor no posee la estructura correcta. Solo debe contener dos dígitos y" \
                " debe ser un número. (Dato recibido: '" + str(CountyNode) + "', número de dígitos: " + str(
-            len(CountyNode)) + ")"
-    else:
-        return True
+                len(CountyNode)) + ")"
+        else:
+            return True
+    except:
+        return "Nodo 'Canton' en sección de Emisor no puede ser vacío."
 
 
 def validateSenderCity(senderNode):  # Distrito
     LocationNode = senderNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
-    CityNode = LocationNode.find('eInvoiceNameSpace:Distrito', namespaces).text
-    if len(CityNode) != 2 or CityNode.isnumeric() == False:
-        return "El nodo de Distrito del Emisor no posee la estructura correcta. Solo debe contener dos dígitos y" \
+    try:
+        CityNode = LocationNode.find('eInvoiceNameSpace:Distrito', namespaces).text
+        if len(CityNode) != 2 or CityNode.isnumeric() == False:
+            return "El nodo de Distrito del Emisor no posee la estructura correcta. Solo debe contener dos dígitos y" \
                " debe ser un número. (Dato recibido: '" + str(CityNode) + "', número de dígitos: " + str(
-            len(CityNode)) + ")"
-    else:
-        return True
-
+                len(CityNode)) + ")"
+        else:
+            return True
+    except:
+        return "Nodo 'Distrito' en sección de Emisor no puede ser vacío."
 
 def validateSenderNeighborhood(senderNode):  # Barrio
     try:
@@ -145,70 +162,87 @@ def validateSenderNeighborhood(senderNode):  # Barrio
 
 def validateSenderOtherSigns(senderNode):
     LocationNode = senderNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
-    OtherSignsNode = LocationNode.findall('eInvoiceNameSpace:OtrasSenas', namespaces)
-    OtherSigns = LocationNode.find('eInvoiceNameSpace:OtrasSenas', namespaces).text
-    if len(OtherSignsNode) == 0:
-        return "No existe Nodo de Ubicacion en XML"
-    else:
+    try:
+        OtherSigns = LocationNode.find('eInvoiceNameSpace:OtrasSenas', namespaces).text
         if len(OtherSigns) > 250:
             return "Excedido límite de caractreres para nodo OtrasSenas de Emisor. (Permitido: 250. Recibido: " + str(
-                len(OtherSigns[0].text)) + ")"
+                len(OtherSigns)) + ")"
         else:
             return True
+    except:
+        return "Nodo 'OtrasSenas' en sección de Emisor no puede ser vacío."
 
 
 def validateSenderTelephone(senderNode):  # ***
     try:
         TelephoneNode = senderNode.find('eInvoiceNameSpace:Telefono', namespaces)
-        telephoneResults = [validateSenderTelephoneCountryCode(TelephoneNode), validateSenderTelephoneNumber(TelephoneNode)]
-        return telephoneResults
+        if TelephoneNode != None:
+            telephoneResults = [validateSenderTelephoneCountryCode(TelephoneNode),
+                                validateSenderTelephoneNumber(TelephoneNode)]
+            return telephoneResults
+        else:
+            return True
     except:
         return True
 
 
 def validateSenderTelephoneCountryCode(TelephoneNode):
-    CountryCode = TelephoneNode.find('eInvoiceNameSpace:CodigoPais', namespaces).text
-    if re.match(REOnlyNumbers, CountryCode) == None or len(CountryCode) != 3:
-        return "Formato de código páis de número de teléfono de Emisor no es válido. Solo se permite un máximo de" \
-               " 3 Números. (Recibido: " + CountryCode + ")."
-    else:
-        return True
-
+    try:
+        CountryCode = TelephoneNode.find('eInvoiceNameSpace:CodigoPais', namespaces).text
+        if re.match(REOnlyNumbers, CountryCode) == None or len(CountryCode) != 3:
+            return "Formato de código páis de número de teléfono de Emisor no es válido. Solo se permite un máximo de" \
+                   " 3 Números. (Recibido: " + CountryCode + ")."
+        else:
+            return True
+    except:
+        return "Nodo 'CodigoPais' en sección Emisor/Telefono no puede ser vacío."
 
 def validateSenderTelephoneNumber(TelephoneNode):
-    telephoneNumber = TelephoneNode.find('eInvoiceNameSpace:NumTelefono', namespaces).text
-    if re.match(REOnlyNumbers, telephoneNumber) == None or len(telephoneNumber) > 20:
-        return "Formato de número telefónico de Emisor no es válido. Solo se permite un máximo de 20 números." \
-               " (Recibido: " + str(telephoneNumber) + ")."
-    else:
-        return True
+    try:
+        telephoneNumber = TelephoneNode.find('eInvoiceNameSpace:NumTelefono', namespaces).text
+        if re.match(REOnlyNumbers, telephoneNumber) == None or len(telephoneNumber) > 20:
+            return "Formato de número telefónico de Emisor no es válido. Solo se permite un máximo de 20 números." \
+                   " (Recibido: " + str(telephoneNumber) + ")."
+        else:
+            return True
+    except:
+        return "Nodo 'NumTelefono' en sección Emisor/Telefono no puede ser vacío."
 
 
 def validateSenderFax(senderNode):  # ***
     try:
         faxNode = senderNode.find('eInvoiceNameSpace:Fax', namespaces)
-        faxResults = [validateSenderTelephoneCountryCode(faxNode), validateSenderTelephoneNumber(faxNode)]
-        return faxResults
+        if(faxNode) != None:
+            faxResults = [validateSenderFaxCountryCode(faxNode), validateSenderFaxNumber(faxNode)]
+            return faxResults
+        else:
+            return True
     except:
         return True
 
 
 def validateSenderFaxCountryCode(faxNode):
-    CountryCode = faxNode.find('eInvoiceNameSpace:CodigoPais', namespaces).text
-    if re.match(REOnlyNumbers, CountryCode) == None or len(CountryCode) != 3:
-        return "Formato de código páis de número de teléfono de Emisor no es válido. Solo se permite un máximo de" \
-               " 3 Números. (Recibido: " + CountryCode + ")."
-    else:
-        return True
+    try:
+        CountryCode = faxNode.find('eInvoiceNameSpace:CodigoPais', namespaces).text
+        if re.match(REOnlyNumbers, CountryCode) == None or len(CountryCode) != 3:
+            return "Formato de código páis de número de teléfono de Emisor no es válido. Solo se permite un máximo de" \
+                   " 3 Números. (Recibido: " + CountryCode + ")."
+        else:
+            return True
+    except:
+        return "Nodo 'CodigoPais' en sección Emisor/Fax no puede ser vacío."
 
 
 def validateSenderFaxNumber(faxNode):
-    FaxNumber = faxNode.find('eInvoiceNameSpace:NumTelefono', namespaces).text
-    if re.match(REOnlyNumbers, FaxNumber) == None or len(FaxNumber) > 20:
-        return "Formato de número telefónico de Emisor no es válido. Solo se permite un máximo de 20 números." \
-               " (Recibido: " + str(FaxNumber) + ")."
-    else:
-        return True
+    try:
+        FaxNumber = faxNode.find('eInvoiceNameSpace:NumTelefono', namespaces).text
+        if re.match(REOnlyNumbers, FaxNumber) == None or len(FaxNumber) > 20:
+            return "Formato de número telefónico de Emisor no es válido. Solo se permite un máximo de 20 números." \
+                   " (Recibido: " + str(FaxNumber) + ")."
+        else:
+            return True
+    except:
+        return "Nodo 'NumTelefono' en sección Emisor/Fax no puede ser vacío."
 
 
 def validateSenderEmail(senderNode):
@@ -220,9 +254,11 @@ def validateSenderEmail(senderNode):
 
 
 def validateSenderEmailDetail(senderNode):
-    EmailNode = senderNode.find('eInvoiceNameSpace:CorreoElectronico', namespaces).text
-    if re.match(REEmailSender, EmailNode) == None or len(EmailNode) > 160:
-        return "Formato de Correo Electronico de Emisor no es válido. (Recibido: " + EmailNode + ")"
-    else:
-        return True
-
+    try:
+        EmailNode = senderNode.find('eInvoiceNameSpace:CorreoElectronico', namespaces).text
+        if re.match(REEmailSender, EmailNode) == None or len(EmailNode) > 160:
+            return "Formato de Correo Electronico de Emisor no es válido. (Recibido: " + EmailNode + ")"
+        else:
+            return True
+    except:
+        return "Nodo 'CorreoElectronico' en sección de Emisor no puede ser vacío."

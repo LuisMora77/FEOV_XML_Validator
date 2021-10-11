@@ -25,13 +25,6 @@ def validateReceiverInfo(data):
     formattedReceiverResults = Validator.AuxiliarFunctions.flattenList(results)
     return formattedReceiverResults
 
-# root = fromstring(xml_text)
-# for actor in root.findall('{http://people.example.com}actor'):
-#     name = actor.find('{http://people.example.com}name')
-#     print(name.text)
-#     for char in actor.findall('{http://characters.example.com}character'):
-#         print(' |-->', char.text)
-
 def validateReceiverNode(receiverNode):
     if receiverNode:
         return True
@@ -40,12 +33,14 @@ def validateReceiverNode(receiverNode):
 
 
 def validateReceiverName(receiverNode):
-    Name = receiverNode.find('eInvoiceNameSpace:Nombre', namespaces).text
-    if len(Name) == 0 or len(Name) > 100:
-        return "-25, El nombre del Receptor no puede estar vacío ni exceder los 100 caracteres"
-    else:
-        return True
-
+    try:
+        Name = receiverNode.find('eInvoiceNameSpace:Nombre', namespaces).text
+        if len(Name) == 0 or len(Name) > 100:
+            return "-25, El nombre del Receptor no puede estar vacío ni exceder los 100 caracteres"
+        else:
+            return True
+    except:
+        return "Nodo 'Nombre' de sección de Receptor no puede ser vacío."
 
 def validateReceiverID(receiverNode):
     IDNode = receiverNode.findall('eInvoiceNameSpace:Identificacion', namespaces)
@@ -58,13 +53,17 @@ def validateReceiverID(receiverNode):
 def validateReceiverIDType(receiverNode):
     acceptedIDTypes = ["01", "02", "03", "04"]
     IDNode = receiverNode.find('eInvoiceNameSpace:Identificacion', namespaces)
-    IDNodeType = IDNode.find('eInvoiceNameSpace:Tipo', namespaces).text
-    if len(IDNodeType) == 0 or len(IDNodeType) > 2 or IDNodeType not in acceptedIDTypes:
-        return "El valor '" + IDNodeType + "' del nodo 'Tipo' en la sección del Receptor, no es válido con respecto " \
-               "al catálogo de tipos aceptados: " + str(acceptedIDTypes)
-    else:
-        return True
-
+    if IDNode == None:
+        return "Factura no posee nodo 'Identificacion', por lo que no se puede evaluar el tipo de identificación."
+    try:
+        IDNodeType = IDNode.find('eInvoiceNameSpace:Tipo', namespaces).text
+        if len(IDNodeType) == 0 or len(IDNodeType) > 2 or IDNodeType not in acceptedIDTypes:
+            return "El valor '" + IDNodeType + "' del nodo 'Tipo' en la sección del Receptor, no es válido con respecto " \
+                   "al catálogo de tipos aceptados: " + str(acceptedIDTypes)
+        else:
+            return True
+    except:
+        return "Nodo 'Tipo' en sección Receptor/Identificacion no puede ser vacío."
 
 
 
@@ -84,20 +83,22 @@ def validateReceiverIDNum(receiverNode):
         result = chosen_operation_function(IDNodeNumber)
         return result
     except:
-        return "No es posible validar el ID del Receptor debido a su tipo."
+        return "No es posible validar el ID del Receptor debido a su tipo o por tener nodo 'Numero' vacío."
 
 
 def validateReceiverCommercialName(receiverNode):
-    CommercialNameNode = receiverNode.find('eInvoiceNameSpace:NombreComercial', namespaces).text
-    if len(CommercialNameNode) > 80:
-        return "Excedida cantidad límite de caracteres para nombre comercial de Receptor (Permitido : 80, recibido: " \
-               + str(len(CommercialNameNode)) + ")"
-    else:
-        return True
-
+    try:
+        CommercialNameNode = receiverNode.find('eInvoiceNameSpace:NombreComercial', namespaces).text
+        if len(CommercialNameNode) > 80:
+            return "Excedida cantidad límite de caracteres para nombre comercial de Receptor (Permitido : 80, recibido: " \
+                   + str(len(CommercialNameNode)) + ")"
+        else:
+            return True
+    except:
+        return "Nodo 'NombreComercial' en sección de Receptor no puede ser vacío."
 
 def validateReceiverLocation(receiverNode):
-    LocationNode = receiverNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
+    LocationNode = receiverNode.findall('eInvoiceNameSpace:Ubicacion', namespaces)
     if len(LocationNode) == 0:
         return "No existe Nodo de Ubicacion en XML"
     else:
@@ -107,33 +108,39 @@ def validateReceiverLocation(receiverNode):
 # state county city
 def validateReceiverState(receiverNode):  # Provincia
     LocationNode = receiverNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
-    StateNode = LocationNode.find('eInvoiceNameSpace:Provincia', namespaces).text
-    if len(StateNode) != 1 or StateNode.isnumeric() == False:
-        return "El nodo de provincia del Receptor no posee la estructura correcta. Solo debe contener un único dígito y" \
-               " debe ser un número. (Dato recibido: '" + str(StateNode) + "', número de dígitos: " + str(len(StateNode)) + ")"
-    else:
-        return True
-
+    try:
+        StateNode = LocationNode.find('eInvoiceNameSpace:Provincia', namespaces).text
+        if len(StateNode) != 1 or StateNode.isnumeric() == False:
+            return "El nodo de provincia del Receptor no posee la estructura correcta. Solo debe contener un único dígito y" \
+                   " debe ser un número. (Dato recibido: '" + str(StateNode) + "', número de dígitos: " + str(len(StateNode)) + ")"
+        else:
+            return True
+    except:
+        return "Nodo 'Provincia' en sección de Receptor no puede ser vacío."
 
 def validateReceiverCounty(receiverNode):  # Canton
     LocationNode = receiverNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
-    CountyNode = LocationNode.find('eInvoiceNameSpace:Canton', namespaces).text
-    if len(CountyNode) != 2 or CountyNode.isnumeric() == False:
-        return "El nodo de Canton del Receptor no posee la estructura correcta. Solo debe contener dos dígitos y" \
-               " debe ser un número. (Dato recibido: '" + str(CountyNode) + "', número de dígitos: " + str(len(CountyNode)) + ")"
-    else:
-        return True
-
+    try:
+        CountyNode = LocationNode.find('eInvoiceNameSpace:Canton', namespaces).text
+        if len(CountyNode) != 2 or CountyNode.isnumeric() == False:
+            return "El nodo de Canton del Receptor no posee la estructura correcta. Solo debe contener dos dígitos y" \
+                   " debe ser un número. (Dato recibido: '" + str(CountyNode) + "', número de dígitos: " + str(len(CountyNode)) + ")"
+        else:
+            return True
+    except:
+        return "Nodo 'Canton' en sección de Receptor no puede ser vacío."
 
 def validateReceiverCity(receiverNode):  # Distrito
     LocationNode = receiverNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
-    CityNode = LocationNode.find('eInvoiceNameSpace:Distrito', namespaces).text
-    if len(CityNode) != 2 or CityNode.isnumeric() == False:
-        return "El nodo de Distrito del Receptor no posee la estructura correcta. Solo debe contener dos dígitos y" \
-               " debe ser un número. (Dato recibido: '" + str(CityNode) + "', número de dígitos: " + str(len(CityNode)) + ")"
-    else:
-        return True
-
+    try:
+        CityNode = LocationNode.find('eInvoiceNameSpace:Distrito', namespaces).text
+        if len(CityNode) != 2 or CityNode.isnumeric() == False:
+            return "El nodo de Distrito del Receptor no posee la estructura correcta. Solo debe contener dos dígitos y" \
+                   " debe ser un número. (Dato recibido: '" + str(CityNode) + "', número de dígitos: " + str(len(CityNode)) + ")"
+        else:
+            return True
+    except:
+        return "Nodo 'Distrito' en sección de Receptor no puede ser vacío."
 
 def validateReceiverNeighborhood(receiverNode):  # Barrio
     try:
@@ -150,70 +157,83 @@ def validateReceiverNeighborhood(receiverNode):  # Barrio
 
 def validateReceiverOtherSigns(receiverNode):
     LocationNode = receiverNode.find('eInvoiceNameSpace:Ubicacion', namespaces)
-    OtherSigns = LocationNode.find('eInvoiceNameSpace:OtrasSenas', namespaces).text
-    if len(OtherSigns) == 0:
-        return "No existe Nodo de Ubicacion en XML"
-    else:
+    try:
+        OtherSigns = LocationNode.find('eInvoiceNameSpace:OtrasSenas', namespaces).text
         if len(OtherSigns) > 250:
             return "Excedido límite de caractreres para nodo OtrasSenas de Receptor. (Permitido: 250. Recibido: " + str(
                 len(OtherSigns)) + ")"
         else:
             return True
-
+    except:
+        return "Nodo 'OtrasSenas' en sección de Receptor no puede ser vacío."
 
 def validateReceiverTelephone(receiverNode):  # ***
     try:
         phoneNode = receiverNode.find('eInvoiceNameSpace:Telefono', namespaces)
-        telephoneResults = [validateReceiverTelephoneCountryCode(phoneNode), validateReceiverTelephoneNumber(phoneNode)]
-        return telephoneResults
+        if phoneNode != None:
+            telephoneResults = [validateReceiverTelephoneCountryCode(phoneNode), validateReceiverTelephoneNumber(phoneNode)]
+            return telephoneResults
+        else:
+            return True
     except:
         return True
 
 
 def validateReceiverTelephoneCountryCode(phoneNode):
-    CountryCode = phoneNode.find('eInvoiceNameSpace:CodigoPais', namespaces).text
-    if re.match(REOnlyNumbers, CountryCode) == None or len(CountryCode) != 3:
-        return "Formato de código páis de número de teléfono de Receptor no es válido. Solo se permite un máximo de" \
-               " 3 Números. (Recibido: " + CountryCode + ")."
-    else:
-        return True
-
+    try:
+        CountryCode = phoneNode.find('eInvoiceNameSpace:CodigoPais', namespaces).text
+        if re.match(REOnlyNumbers, CountryCode) == None or len(CountryCode) != 3:
+            return "Formato de código páis de número de teléfono de Receptor no es válido. Solo se permite un máximo de" \
+                   " 3 Números. (Recibido: " + CountryCode + ")."
+        else:
+            return True
+    except:
+        return "Nodo 'CodigoPais' en sección Receptor/Telefono no puede ser vacío."
 
 def validateReceiverTelephoneNumber(phoneNode):
-    telephoneNumber = phoneNode.find('eInvoiceNameSpace:NumTelefono', namespaces).text
-    if re.match(REOnlyNumbers, telephoneNumber) == None or len(telephoneNumber) > 20:
-        return "Formato de número telefónico de Receptor no es válido. Solo se permite un máximo de 20 números." \
-               " (Recibido: " + str(telephoneNumber) + ")."
-    else:
-        return True
-
+    try:
+        telephoneNumber = phoneNode.find('eInvoiceNameSpace:NumTelefono', namespaces).text
+        if re.match(REOnlyNumbers, telephoneNumber) == None or len(telephoneNumber) > 20:
+            return "Formato de número telefónico de Receptor no es válido. Solo se permite un máximo de 20 números." \
+                   " (Recibido: " + str(telephoneNumber) + ")."
+        else:
+            return True
+    except:
+        return "Nodo 'NumTelefono' en sección Receptor/Telefono no puede ser vacío."
 
 def validateReceiverFax(receiverNode):  # ***
     try:
         FaxNode = receiverNode.find('eInvoiceNameSpace:Fax', namespaces)
-        faxResults = [validateReceiverTelephoneCountryCode(FaxNode), validateReceiverTelephoneNumber(FaxNode)]
-        return faxResults
+        if FaxNode != None:
+            faxResults = [validateReceiverFaxCountryCode(FaxNode), validateReceiverFaxNumber(FaxNode)]
+            return faxResults
+        else:
+            return True
     except:
         return True
 
 
 def validateReceiverFaxCountryCode(receiverNode):
-    CountryCode = receiverNode.find('eInvoiceNameSpace:CodigoPais', namespaces).text
-    if re.match(REOnlyNumbers, CountryCode) == False or len(CountryCode) != 3:
-        return "Formato de código páis de número de teléfono de Receptor no es válido. Solo se permite un máximo de" \
-               " 3 Números. (Recibido: " + CountryCode + ")."
-    else:
-        return True
-
+    try:
+        CountryCode = receiverNode.find('eInvoiceNameSpace:CodigoPais', namespaces).text
+        if re.match(REOnlyNumbers, CountryCode) == False or len(CountryCode) != 3:
+            return "Formato de código páis de número de teléfono de Receptor no es válido. Solo se permite un máximo de" \
+                   " 3 Números. (Recibido: " + CountryCode + ")."
+        else:
+            return True
+    except:
+        return "Nodo 'CodigoPais' en sección Receptor/Fax no puede ser vacío."
 
 def validateReceiverFaxNumber(receiverNode):
-    FaxNumber = receiverNode.find('eInvoiceNameSpace:NumTelefono', namespaces).text
-    if re.match(REOnlyNumbers, FaxNumber) == None or len(FaxNumber) > 20:
-        return "Formato de número telefónico de Receptor no es válido. Solo se permite un máximo de 20 números." \
-               " (Recibido: " + str(FaxNumber) + ")."
-    else:
-        return True
-
+    try:
+        FaxNumber = receiverNode.find('eInvoiceNameSpace:NumTelefono', namespaces).text
+        if re.match(REOnlyNumbers, FaxNumber) == None or len(FaxNumber) > 20:
+            return "Formato de número telefónico de Receptor no es válido. Solo se permite un máximo de 20 números." \
+                   " (Recibido: " + str(FaxNumber) + ")."
+        else:
+            return True
+    except:
+        return "Nodo 'NumTelefono' en sección Receptor/Fax no puede ser vacío."
 
 def validateReceiverEmail(receiverNode):
     EmailNode = receiverNode.findall('eInvoiceNameSpace:CorreoElectronico', namespaces)
@@ -224,9 +244,11 @@ def validateReceiverEmail(receiverNode):
 
 
 def validateReceiverEmailDetail(receiverNode):
-    EmailNode = receiverNode.find('eInvoiceNameSpace:CorreoElectronico', namespaces).text
-    if re.match(REEmailReceiver, EmailNode) == None or len(EmailNode) > 160:
-        return "Formato de Correo Electronico de Receptor no es válido. (Recibido: " + EmailNode + ")"
-    else:
-        return True
-
+    try:
+        EmailNode = receiverNode.find('eInvoiceNameSpace:CorreoElectronico', namespaces).text
+        if re.match(REEmailReceiver, EmailNode) == None or len(EmailNode) > 160:
+            return "Formato de Correo Electronico de Receptor no es válido. (Recibido: " + EmailNode + ")"
+        else:
+            return True
+    except:
+        return "Nodo 'CorreoElectronico' en sección de Receptor no puede ser vacío."

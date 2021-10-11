@@ -484,7 +484,7 @@ def validateThirdPartysName(data, LineNum):
         OCDocTypeNode = otherChargesNode.find('eInvoiceNameSpace:TipoDocumento', namespaces).text
         if OCDocTypeNode == "04":
             try:
-                nameNode = otherChargesNode.findall('eInvoiceNameSpace:NombreTercero', namespaces).text
+                nameNode = otherChargesNode.find('eInvoiceNameSpace:NombreTercero', namespaces).text
                 if len(nameNode) > 100:
                     return " Valor de nodo 'NombreTercero' en sección 'OtrosCargos', línea " \
                            + str(LineNum + 1) + " no posee un formato válido (máximo 100 caracteres, caracteres" \
