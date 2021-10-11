@@ -22,5 +22,5 @@ def checkString(stringg):
 
 if __name__ == '__main__':
     #  Esto hay que hacerlo dinámico según negocio lo quiera usar
-    run("//gishared/ServidordeArchivos/Documentos por Area/Factura Electronica/OV/CMER_OV_01790907_CMER-003350415_Signed_v2.xml", 1)
+    run("//gishared/ServidordeArchivos/Documentos por Area/Factura Electronica/OV/CMER_fmcmOC-00049067_CMER-003350130_Signed_v2.xml", 1)
 

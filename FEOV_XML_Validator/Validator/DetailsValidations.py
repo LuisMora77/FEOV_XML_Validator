@@ -249,9 +249,8 @@ def validateTaxBase(data, LineNum):
 def validateTaxCode(data, LineNum):
     acceptedCodes = ["01", "02", "03", "04", "05", "06", "07", "08", "12", "99"]
     # acceptedCodes = ["01", "02", "03", "04", "05", "06", "07", "08"]
-    try:
-        taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
-    except:
+    taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    if taxNode == None:
         return True
     try:
         taxCode = taxNode.find('eInvoiceNameSpace:Codigo', namespaces).text
@@ -266,9 +265,8 @@ def validateTaxCode(data, LineNum):
 
 def validateTaxRateCode(data, LineNum):
     acceptedCodes = ["01", "02", "03", "04", "05", "06", "07", "08"]
-    try:
-        taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
-    except:
+    taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    if taxNode == None:
         return True
     try:
         taxRateCodNode = taxNode.find('eInvoiceNameSpace:CodigoTarifa', namespaces).text
@@ -283,9 +281,8 @@ def validateTaxRateCode(data, LineNum):
 
 
 def validateTaxRate(data, LineNum):
-    try:
-        taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
-    except:
+    taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    if taxNode == None:
         return True
     try:
         taxRateNode = taxNode.find('eInvoiceNameSpace:Tarifa', namespaces).text
@@ -301,9 +298,8 @@ def validateTaxRate(data, LineNum):
 
 
 def validateAmount(data, LineNum):
-    try:
-        taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
-    except:
+    taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    if taxNode == None:
         return True
     try:
         amountNode = taxNode.find('eInvoiceNameSpace:Monto', namespaces).text
@@ -319,8 +315,10 @@ def validateAmount(data, LineNum):
 
 def validateExonerationDocumentType(data, LineNum):
     taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    if taxNode == None:
+        return True
     exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    if taxNode == None or exonerationNode == None:
+    if  exonerationNode == None:
         return True
     acceptedTypes = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "99"]
     try:
@@ -338,8 +336,10 @@ def validateExonerationDocumentType(data, LineNum):
 
 def validateDocNumber(data, LineNum):
     taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    if taxNode == None:
+        return True
     exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    if taxNode == None or exonerationNode == None:
+    if exonerationNode == None:
         return True
     try:
         docNum = exonerationNode.find('eInvoiceNameSpace:NumeroDocumento', namespaces).text
@@ -355,8 +355,10 @@ def validateDocNumber(data, LineNum):
 
 def validateInstitutionName(data, LineNum):
     taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    if taxNode == None:
+        return True
     exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    if taxNode == None or exonerationNode == None:
+    if exonerationNode == None:
         return True
     try:
         instName = data.find('eInvoiceNameSpace:NombreInstitucion', namespaces).text
@@ -373,8 +375,10 @@ def validateInstitutionName(data, LineNum):
 
 def validateSentDate(data, LineNum):
     taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    if taxNode == None:
+        return True
     exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    if taxNode == None or exonerationNode == None:
+    if exonerationNode == None:
         return True
     try:
         dateNode = exonerationNode.find('eInvoiceNameSpace:FechaEmision', namespaces).text
@@ -387,8 +391,10 @@ def validateSentDate(data, LineNum):
 
 def validateExemptionPercentage(data, LineNum):
     taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    if taxNode == None:
+        return True
     exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    if taxNode == None or exonerationNode == None:
+    if exonerationNode == None:
         return True
     try:
         ExemptionNode = exonerationNode.find('eInvoiceNameSpace:PorcentajeExoneracion', namespaces).text
@@ -404,8 +410,10 @@ def validateExemptionPercentage(data, LineNum):
 
 def validateExemptionAmount(data, LineNum):
     taxNode = data.find('eInvoiceNameSpace:Impuesto', namespaces)
+    if taxNode == None:
+        return True
     exonerationNode = taxNode.find('eInvoiceNameSpace:Exoneracion', namespaces)
-    if taxNode == None or exonerationNode == None:
+    if exonerationNode == None:
         return True
     try:
         ExemptionAmountNode = exonerationNode.find('eInvoiceNameSpace:MontoExoneracion', namespaces).text
