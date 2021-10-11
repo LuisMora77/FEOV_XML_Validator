@@ -19,36 +19,45 @@ def readPUXml(path):
     except:
         return "No se pudo leer el archivo"
 
-def prepend_ns(s):
-    return '{https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica}' + s
-
 
 def validateXML(path, xmlType: int):
     readResult = readPUXml(path)
     if xmlType == 0:
         return validatePUXml(readResult)
     elif xmlType == 1:
-        #readResult = readEInvoiceXml(path)
-        #return validateEInvoiceXml(readResult)
-        return "a"
+        return validateEInvoiceXml(readResult)
     else:
         return "Se utilizó un tipo inválido de XML"
 
 
 def validatePUXml(data: xml.etree.ElementTree.Element):
 
-    result = [Validator.HeaderValidations.validateHeaderInfo(data),#,
-              Validator.SenderValidations.validateSenderInfo(data)]#,
-              #Validator.ReceiverValidations.validateReceiverInfo(data),
-              #Validator.DetailsValidations.validateDetailsInfo(data),
-              #Validator.TotalsValidations.validateTotalsInfo(data)]
+    result = [Validator.HeaderValidations.validateHeaderInfo(data),
+              Validator.SenderValidations.validateSenderInfo(data),
+              Validator.ReceiverValidations.validateReceiverInfo(data),
+              Validator.DetailsValidations.validateDetailsInfo(data)]
 
     flat_list = Validator.AuxiliarFunctions.flattenList(result)
     response = all(item == True for item in flat_list)
-    #print("Results: " + str(flat_list))
     if response:
-        return f"{OKGREEN}XML válido"
+        return "XML válido"
+        # return f"{OKGREEN}XML válido"
     else:
         return Validator.AuxiliarFunctions.formatErrorMessages(flat_list)
 
 
+def validateEInvoiceXml(data: xml.etree.ElementTree.Element):
+
+    result = [Validator.HeaderValidations.validateHeaderInfo(data),
+              Validator.SenderValidations.validateSenderInfo(data),
+              Validator.ReceiverValidations.validateReceiverInfo(data),
+              Validator.DetailsValidations.validateDetailsInfo(data),
+              Validator.TotalsValidations.validateTotalsInfo(data)]
+
+    flat_list = Validator.AuxiliarFunctions.flattenList(result)
+    response = all(item == True for item in flat_list)
+    if response:
+        return "XML válido"
+        #return f"{OKGREEN}XML válido"
+    else:
+        return Validator.AuxiliarFunctions.formatErrorMessages(flat_list)

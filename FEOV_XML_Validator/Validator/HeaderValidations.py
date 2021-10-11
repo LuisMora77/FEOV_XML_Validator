@@ -18,11 +18,14 @@ def validateHeaderInfo(data: xml.etree.ElementTree.Element):
 
 
 def validateActivityCode(data: xml.etree.ElementTree.Element):
-    code = data.findall('eInvoiceNameSpace:CodigoActividad', namespaces)[0].text
-    if len(code) > 6:
-        return "Código de actividad (" + code + ") posee un número de dígitos mayor al permitido (6)"
-    else:
-        return True
+    try:
+        code = data.find('eInvoiceNameSpace:CodigoActividad', namespaces).text
+        if len(code) > 6:
+            return "Código de actividad (" + code + ") posee un número de dígitos mayor al permitido (6)"
+        else:
+            return True
+    except:
+        return "Nodo 'CodigoActividad' no puede ser vacío."
 
 
 def isValidDateTime(dateTimeStr):
@@ -58,10 +61,12 @@ def manageDateSpanValidation(sentDate):
 
 
 def validateSentDate(data: xml.etree.ElementTree.Element):
-    dateStr = data.findall('eInvoiceNameSpace:FechaEmision', namespaces)[0].text
-    results = [manageDateTimeFormatValidation(dateStr), manageDateSpanValidation(dateStr)]
-    return results
-
+    try:
+        dateStr = data.find('eInvoiceNameSpace:FechaEmision', namespaces).text
+        results = [manageDateTimeFormatValidation(dateStr), manageDateSpanValidation(dateStr)]
+        return results
+    except:
+        return "Nodo 'FechaEmision' en sección de encabezado no puede ser vacío."
 
 def validateSalesCondition(data: xml.etree.ElementTree.Element):
     ConditionNode = data.findall('eInvoiceNameSpace:CondicionVenta', namespaces)
@@ -70,20 +75,25 @@ def validateSalesCondition(data: xml.etree.ElementTree.Element):
     else:
         return True
 
-
 def validateSalesConditionNumber(data: xml.etree.ElementTree.Element):
-    acceptedConditions = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "99"]  # 02 = Crédito
-    salesConditionNode = data.findall('eInvoiceNameSpace:CondicionVenta', namespaces)[0].text
-    if len(salesConditionNode) != 2 or salesConditionNode not in acceptedConditions:
-        return "El valor (" + salesConditionNode + ") del nodo 'CondicionVenta' en la sección del encabezado," \
+    try:
+        acceptedConditions = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "99"]  # 02 = Crédito
+        salesConditionNode = data.find('eInvoiceNameSpace:CondicionVenta', namespaces).text
+        if len(salesConditionNode) != 2 or salesConditionNode not in acceptedConditions:
+            return "El valor (" + salesConditionNode + ") del nodo 'CondicionVenta' en la sección del encabezado," \
                                                    " no es válido con respecto al catálogo de tipos: " + str(
             acceptedConditions)
-    else:
-        return True
+        else:
+            return True
+    except:
+        return "Nodo 'CondicionVenta' en sección de encabezado no puede ser vacío."
 
 
 def validateSalesCreditTerm(data: xml.etree.ElementTree.Element):
-    salesConditionNode = data.findall('eInvoiceNameSpace:CondicionVenta', namespaces)[0].text
+    try:
+        salesConditionNode = data.find('eInvoiceNameSpace:CondicionVenta', namespaces).text
+    except:
+        return "No existe nodo 'CondicionVenta', por lo que no se puede evaluar el plazo de crédito."
     if salesConditionNode == "02":
         CreditTermNode = data.findall('eInvoiceNameSpace:PlazoCredito', namespaces)
         if len(CreditTermNode) == 0:
@@ -96,7 +106,7 @@ def validateSalesCreditTerm(data: xml.etree.ElementTree.Element):
 
 def validateSalesCeditTermFormat(data: xml.etree.ElementTree.Element):
     try:
-        creditTermNode = data.findall('eInvoiceNameSpace:PlazoCredito', namespaces)[0].text
+        creditTermNode = data.find('eInvoiceNameSpace:PlazoCredito', namespaces).text
         if len(creditTermNode) > 10:
             return "Valor '" + creditTermNode + "' de nodo 'Plazo Crédito' excede límite de caracteres (10). " \
                                                 "Cantidad obtenida: " + str(len(creditTermNode))
@@ -117,12 +127,11 @@ def validatePaymentMethod(data: xml.etree.ElementTree.Element):
 def validatePaymentMethodFormat(data: xml.etree.ElementTree.Element):
     acceptedPaymentMethods = ["01", "02", "03", "04", "05", "99"]
     try:
-        paymentMethodNode = data.findall('eInvoiceNameSpace:MedioPago', namespaces)[0].text
+        paymentMethodNode = data.find('eInvoiceNameSpace:MedioPago', namespaces).text
         if len(paymentMethodNode) > 2 or paymentMethodNode not in acceptedPaymentMethods:
-            return "El valor (" + paymentMethodNode + ") del nodo 'MedioPago' en la sección del encabezado " \
-                                                      "no es válido con respecto al catálogo de tipos: " + str(
-                acceptedPaymentMethods)
+            return " El valor (" + paymentMethodNode + ") del nodo 'MedioPago' en la sección del encabezado" \
+                   " no es válido con respecto al catálogo de tipos: " + str(acceptedPaymentMethods)
         else:
             return True
     except:
-        "Nodo 'MedioPago' en sección de encabezado está vacio o presenta algún problema"
+        return "Nodo 'MedioPago' en sección de encabezado está vacio o presenta algún problema"
