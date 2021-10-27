@@ -1,4 +1,4 @@
-import Validator.AuxiliarFunctions
+import XMLValidator.Validator.AuxiliarFunctions as AuxiliarFunctions
 
 # Namespace necesario al momento de obtener un nodo, sin esto no se pueden leer los datos del nodo.
 namespaces = {'eInvoiceNameSpace': 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'}
@@ -43,7 +43,7 @@ def validateDetailsInfo(data):
         results.append(validateChargeAmount(data, lineNum))
         lineNum += 1
 
-    formattedDetailResults = Validator.AuxiliarFunctions.flattenList(results)
+    formattedDetailResults = AuxiliarFunctions.flattenList(results)
     return formattedDetailResults
 
 
@@ -101,7 +101,7 @@ def validateCommercialCodeCode(data, LineNum):
 def validateQty(data, LineNum):
     try:
         QtyNode = data.find('eInvoiceNameSpace:Cantidad', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(QtyNode, 13, 3)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(QtyNode, 13, 3)
         if not isValidDecimal:
             return "Valor de nodo 'Cantidad' en sección 'DetalleServicio/LineaDetalle', línea " \
                    + str(LineNum + 1) + " no posee un formato válido (13 enteros (máximo), 3 decimales)"
@@ -151,7 +151,7 @@ def validateDetail(data, LineNum):
 def validateUnitPrice(data, LineNum):
     try:
         unitPriceNode = data.find('eInvoiceNameSpace:PrecioUnitario', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(unitPriceNode, 18, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(unitPriceNode, 18, 5)
         if not isValidDecimal:
             return "Valor de nodo 'PrecioUnitario' en sección 'DetalleServicio/LineaDetalle', línea " \
                    + str(LineNum + 1) + " no posee un formato válido ( 18 enteros (máximo), 5 decimales. Recibido: " \
@@ -165,7 +165,7 @@ def validateUnitPrice(data, LineNum):
 def validateTotalAmount(data, LineNum):
     try:
         totalAmountNode = data.find('eInvoiceNameSpace:MontoTotal', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalAmountNode, 18, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(totalAmountNode, 18, 5)
         if not isValidDecimal:
             return "Valor de nodo 'MontoTotal' en sección 'DetalleServicio/LineaDetalle', línea " \
                    + str(LineNum + 1) + " no posee un formato válido ( 18 enteros (máximo), 5 decimales. Recibido: " \
@@ -182,7 +182,7 @@ def validateDiscount(data, LineNum):
         return True
     try:
         discountAmountNode = discountNode.find('eInvoiceNameSpace:MontoDescuento', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(discountAmountNode, 18, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(discountAmountNode, 18, 5)
         if not isValidDecimal:
             return "Valor de nodo 'MontoDescuento' en sección 'DetalleServicio/LineaDetalle/Descuento', línea " \
                    + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales. Recibido: " \
@@ -213,7 +213,7 @@ def validateDiscountReason(data, LineNum):
 def validateSubTotal(data, LineNum):
     try:
         subTotalNode = data.find('eInvoiceNameSpace:SubTotal', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(subTotalNode, 18, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(subTotalNode, 18, 5)
         if not isValidDecimal:
             return "Valor de nodo 'SubTotal' en sección 'DetalleServicio/LineaDetalle', línea " \
                    + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales. Recibido: " \
@@ -231,7 +231,7 @@ def validateTaxBase(data, LineNum):
         if taxCode == "07":
             try:
                 taxBaseNode = data.find('eInvoiceNameSpace:BaseImponible', namespaces).text
-                isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(taxBaseNode, 18, 5)
+                isValidDecimal = AuxiliarFunctions.validateDecimal(taxBaseNode, 18, 5)
                 if not isValidDecimal:
                     return "Valor de nodo 'BaseImponible' en sección 'DetalleServicio/LineaDetalle', línea " \
                            + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales. \
@@ -286,7 +286,7 @@ def validateTaxRate(data, LineNum):
         return True
     try:
         taxRateNode = taxNode.find('eInvoiceNameSpace:Tarifa', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(taxRateNode, 4, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(taxRateNode, 4, 5)
         if not isValidDecimal:
             return "Valor de nodo 'Tarifa' en sección 'DetalleServicio/LineaDetalle/Impuesto', línea " \
                    + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales. Recibido: " \
@@ -303,7 +303,7 @@ def validateAmount(data, LineNum):
         return True
     try:
         amountNode = taxNode.find('eInvoiceNameSpace:Monto', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(amountNode, 18, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(amountNode, 18, 5)
         if not isValidDecimal:
             return "Valor de nodo 'Monto' en sección 'DetalleServicio/LineaDetalle/Impuesto', línea " \
                    + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales)"
@@ -417,7 +417,7 @@ def validateExemptionAmount(data, LineNum):
         return True
     try:
         ExemptionAmountNode = exonerationNode.find('eInvoiceNameSpace:MontoExoneracion', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(ExemptionAmountNode, 18, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(ExemptionAmountNode, 18, 5)
         if not isValidDecimal:
             return " Valor de nodo 'MontoExoneracion' en sección 'DetalleServicio/LineaDetalle/Impuesto/Exoneracion'," \
                    " línea " + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales." \
@@ -435,7 +435,7 @@ def validateNetTax(data, LineNum):
         return "No se encuenta nodo 'ImpuestoNeto' en lineaDetalle " + LineNum + ", el cual es de caracter obligatorio."
     try:
         netTaxStr = netTaxNode.text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(netTaxStr, 18, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(netTaxStr, 18, 5)
         if not isValidDecimal:
             return "Valor de nodo 'ImpuestoNeto' en sección 'DetalleServicio/LineaDetalle', línea " \
                    + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales. Recibido: "\
@@ -452,7 +452,7 @@ def validateTotalLineAmount(data, LineNum):
         TLANode = data.find('eInvoiceNameSpace:MontoTotalLinea', namespaces)
         try:
             TLAStr = TLANode.text
-            isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(TLAStr, 18, 5)
+            isValidDecimal = AuxiliarFunctions.validateDecimal(TLAStr, 18, 5)
             if not isValidDecimal:
                 return "Valor de nodo 'MontoTotalLinea' en sección 'DetalleServicio/LineaDetalle', línea " \
                        + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales." \
@@ -531,7 +531,7 @@ def validateOCPercent(data, LineNum):
         return True
     try:
         percentageNode = otherChargesNode.find('eInvoiceNameSpace:Porcentaje', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(percentageNode, 9, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(percentageNode, 9, 5)
         if not isValidDecimal:
             return " Valor de nodo 'Porcentaje' en sección 'OtrosCargos', línea " \
                    + str(LineNum + 1) + " no posee un formato válido (9 enteros (máximo), 5 decimales. Recibido: " \
@@ -549,7 +549,7 @@ def validateChargeAmount(data, LineNum):
         return True
     try:
         chargeNode = otherChargesNode.find('eInvoiceNameSpace:MontoCargo', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(chargeNode, 18, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(chargeNode, 18, 5)
         if not isValidDecimal:
             return " Valor de nodo 'MontoCargo' en sección 'OtrosCargos', línea " \
                    + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales." \

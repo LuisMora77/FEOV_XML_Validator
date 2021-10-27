@@ -1,4 +1,4 @@
-import Validator.AuxiliarFunctions
+import XMLValidator.Validator.AuxiliarFunctions as AuxiliarFunctions
 import xml.etree.ElementTree
 import re
 
@@ -16,12 +16,13 @@ def validateTotalsInfo(data: xml.etree.ElementTree.Element):
     results = validateTotals(einviceSummaryNode, totalNodesNames, data)
     results.append(validateCurrencyCode(einviceSummaryNode))
     results.append(validateExchangeRate(einviceSummaryNode))
-    formattedTotalsResults = Validator.AuxiliarFunctions.flattenList(results)
+    formattedTotalsResults = AuxiliarFunctions.flattenList(results)
     return formattedTotalsResults
 
 
-def checkOtherChargesNode(data, nodesList):
+def checkOtherChargesNode(data: xml.etree.ElementTree.Element, nodesList):
     otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
+    print("otherChargesNode", otherChargesNode)
     if otherChargesNode == None:
         nodesList.remove("TotalOtrosCargos")
     return nodesList
@@ -33,7 +34,7 @@ def validateTotals(einviceSummaryNode, nodesList, data):
     for nodeName in finalNodeList:
         try:
             totalNode = einviceSummaryNode.find('eInvoiceNameSpace:' + nodeName, namespaces).text
-            isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
+            isValidDecimal = AuxiliarFunctions.validateDecimal(totalNode, 18, 5)
             if not isValidDecimal:
                 results.append(" Valor de nodo '" + nodeName + "' en sección './/ResumenFactura , no posee un formato"
                                " válido (18 enteros (máximo), 5 decimales. Recibido: " + totalNode + ")")
@@ -61,7 +62,7 @@ def validateExchangeRate(data: xml.etree.ElementTree.Element):
     try:
         currencyCodeTypeNode = data.find('eInvoiceNameSpace:CodigoTipoMoneda', namespaces)
         ExchangeRateNode = currencyCodeTypeNode.find('eInvoiceNameSpace:TipoCambio', namespaces).text
-        isValidDecimal = Validator.AuxiliarFunctions.validateDecimal(ExchangeRateNode, 18, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(ExchangeRateNode, 18, 5)
         if not isValidDecimal:
             return "Valor de nodo 'TipoCambio' en sección './/ResumenFactura/CodigoTipoMoneda, no posee un " \
                    "formato válido (18 enteros (máximo), 5 decimales. Recibido: " + ExchangeRateNode + ")"

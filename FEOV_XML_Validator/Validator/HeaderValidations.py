@@ -1,7 +1,7 @@
 import datetime
 from dateutil.parser import parse
 import xml.etree.ElementTree
-import Validator.AuxiliarFunctions
+import XMLValidator.Validator.AuxiliarFunctions as AuxiliarFunctions
 
 namespaces = {'eInvoiceNameSpace': 'https://cdn.comprobanteselectronicos.go.cr/xml-schemas/v4.3/facturaElectronica'} # add more as needed
 
@@ -13,7 +13,7 @@ def validateHeaderInfo(data: xml.etree.ElementTree.Element):
     results = [validateActivityCode(data), validateSentDate(data), validateSalesCondition(data),
                validateSalesConditionNumber(data), validateSalesCreditTerm(data),
                validateSalesCeditTermFormat(data), validatePaymentMethod(data), validatePaymentMethodFormat(data)]
-    formattedHeaderResults = Validator.AuxiliarFunctions.flattenList(results)
+    formattedHeaderResults = AuxiliarFunctions.flattenList(results)
     return formattedHeaderResults
 
 

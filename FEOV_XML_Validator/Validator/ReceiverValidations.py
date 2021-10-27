@@ -1,5 +1,5 @@
 import xml.etree.ElementTree
-import Validator.AuxiliarFunctions
+import XMLValidator.Validator.AuxiliarFunctions as AuxiliarFunctions
 import re
 
 # Expresion regular que solo acepta numeros del 0 al 9.
@@ -22,7 +22,7 @@ def validateReceiverInfo(data):
                validateReceiverOtherSigns(receiverNode), validateReceiverTelephone(receiverNode),
                validateReceiverFax(receiverNode), validateReceiverEmail(receiverNode),
                validateReceiverEmailDetail(receiverNode)]
-    formattedReceiverResults = Validator.AuxiliarFunctions.flattenList(results)
+    formattedReceiverResults = AuxiliarFunctions.flattenList(results)
     return formattedReceiverResults
 
 def validateReceiverNode(receiverNode):
@@ -72,10 +72,10 @@ def validateReceiverIDNum(receiverNode):
     IDNodeType = IDNode.find('eInvoiceNameSpace:Tipo', namespaces).text
     IDNodeNumber = IDNode.find('eInvoiceNameSpace:Numero', namespaces).text
     IdTypesCorrespondingFunctions = {
-        "01": Validator.AuxiliarFunctions.validatePhysicalID,
-        "02": Validator.AuxiliarFunctions.validateLegalID,
-        "03": Validator.AuxiliarFunctions.validateDIMEXID,
-        "04": Validator.AuxiliarFunctions.validateNITEID
+        "01": AuxiliarFunctions.validatePhysicalID,
+        "02": AuxiliarFunctions.validateLegalID,
+        "03": AuxiliarFunctions.validateDIMEXID,
+        "04": AuxiliarFunctions.validateNITEID
     }
     try:
         chosen_operation_function = IdTypesCorrespondingFunctions.get(IDNodeType,
