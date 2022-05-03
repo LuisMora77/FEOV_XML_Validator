@@ -66,7 +66,7 @@ def validateSentDate(data: xml.etree.ElementTree.Element):
         results = [manageDateTimeFormatValidation(dateStr), manageDateSpanValidation(dateStr)]
         return results
     except:
-        return "Nodo 'FechaEmision' en sección de encabezado no puede ser vacío."
+        return "Nodo 'FechaEmision' en sección de encabezado no puede ser vacío o presenta algun problema."
 
 def validateSalesCondition(data: xml.etree.ElementTree.Element):
     ConditionNode = data.findall('eInvoiceNameSpace:CondicionVenta', namespaces)
