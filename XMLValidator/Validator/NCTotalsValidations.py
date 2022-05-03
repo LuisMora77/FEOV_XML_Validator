@@ -30,7 +30,7 @@ def checkOtherChargesNode(data: xml.etree.ElementTree.Element, nodesList):
 
 def validateTotals(einviceSummaryNode, nodesList, data):
     results = []
-    finalNodeList = checkOtherChargesNode(data, nodesList)
+    finalNodeList = checkOtherChargesNode(data, nodesList.copy())
     for nodeName in finalNodeList:
         try:
             totalNode = einviceSummaryNode.find('eInvoiceNameSpace:' + nodeName, namespaces).text

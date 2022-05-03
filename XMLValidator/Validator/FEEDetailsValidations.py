@@ -69,11 +69,11 @@ def validateLinetariffItem(data, lineNum):
         tariffItem = data.find('eInvoiceNameSpace:PartidaArancelaria', namespaces).text
         if len(tariffItem) != 12:
             return "Valor de nodo 'PartidaArancelaria' en sección de DetalleServicio, línea " + str(
-                lineNum + 1) + ", no posee un formato válido (13 caracteres. Recibido: " + tariffItem + ")"
+                lineNum + 1) + ", no posee un formato válido (12 caracteres. Recibido: " + tariffItem + ")"
         else:
             return True
     except:
-        return "Valor de nodo 'PartidaArancelaria' en sección 'DetalleServicio/LineaDetalle', esta vacío o presenta algún problema."
+        return "Valor de nodo 'PartidaArancelaria' en sección 'DetalleServicio/LineaDetalle', esta vacío o presenta algún problema, revisar."
 
 
 def validateQty(data, LineNum):

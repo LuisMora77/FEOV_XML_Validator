@@ -23,14 +23,13 @@ def validateTotalsInfo(data: xml.etree.ElementTree.Element):
 def checkOtherChargesNode(data: xml.etree.ElementTree.Element, nodesList):
     otherChargesNode = data.find('eInvoiceNameSpace:OtrosCargos', namespaces)
     print("otherChargesNode", otherChargesNode)
-    if otherChargesNode == None:
+    if otherChargesNode == None:    
         nodesList.remove("TotalOtrosCargos")
     return nodesList
 
-
 def validateTotals(einviceSummaryNode, nodesList, data):
     results = []
-    finalNodeList = checkOtherChargesNode(data, nodesList)
+    finalNodeList = checkOtherChargesNode(data, nodesList.copy())
     for nodeName in finalNodeList:
         try:
             totalNode = einviceSummaryNode.find('eInvoiceNameSpace:' + nodeName, namespaces).text
