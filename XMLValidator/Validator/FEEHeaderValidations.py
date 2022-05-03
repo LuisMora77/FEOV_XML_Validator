@@ -105,20 +105,20 @@ def validateSalesCreditTerm(data: xml.etree.ElementTree.Element):
 
 
 def validateSalesCeditTermFormat(data: xml.etree.ElementTree.Element):
-    
-    salesConditionNode = data.find('eInvoiceNameSpace:CondicionVenta', namespaces).text
-    if(salesConditionNode == "02"):
         try:
-            creditTermNode = data.find('eInvoiceNameSpace:PlazoCredito', namespaces).text
-            if len(creditTermNode) > 10:
-                return "Valor '" + creditTermNode + "' de nodo 'Plazo Crédito' excede límite de caracteres (10). " \
-                                                    "Cantidad obtenida: " + str(len(creditTermNode))
+            salesConditionNode = data.find('eInvoiceNameSpace:CondicionVenta', namespaces).text
+            if(salesConditionNode == "02"):
+                creditTermNode = data.find('eInvoiceNameSpace:PlazoCredito', namespaces).text
+                if len(creditTermNode) > 10:
+                    return "Valor '" + creditTermNode + "' de nodo 'Plazo Crédito' excede límite de caracteres (10). " \
+                                                        "Cantidad obtenida: " + str(len(creditTermNode))
+                else:
+                    return True
             else:
                 return True
         except:
             return "Nodo 'PlazoCredito' en sección de encabezado está vacio o presenta algún problema"
-    else:
-        return True
+
 
 
 def validatePaymentMethod(data: xml.etree.ElementTree.Element):
