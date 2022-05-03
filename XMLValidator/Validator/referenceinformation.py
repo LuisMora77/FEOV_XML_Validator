@@ -23,18 +23,20 @@ def validateReferenceInfoNode(senderReferenceinfoNode):
         return "No existe Nodo de InformacionReferencia en el XML"
 
 def validatReferenceCode(senderReferenceinfoNode):
-    docType = senderReferenceinfoNode.find('eInvoiceNameSpace:TipoDoc', namespaces).text
-    if docType != "99" and docType != "13":
+   
         try:
-            number = senderReferenceinfoNode.find('eInvoiceNameSpace:Numero', namespaces).text
-            if len(number) == 0 or len(number) != 50:
-                return "-25, La calve de referencia no puede estar vacío ni exceder, ni ser minimo los 50 caracteres, en la sección './/InformacionReferencia"
+            docType = senderReferenceinfoNode.find('eInvoiceNameSpace:TipoDoc', namespaces).text
+            if docType != "99" and docType != "13":
+                    number = senderReferenceinfoNode.find('eInvoiceNameSpace:Numero', namespaces).text
+                    if len(number) == 0 or len(number) != 50:
+                        return "-25, La calve de referencia no puede estar vacío ni exceder, ni ser minimo los 50 caracteres, en la sección './/InformacionReferencia"
+                    else:
+                        return True
             else:
                 return True
         except:
             return "Nodo 'Numero' de sección de Informacion de referencia no puede ser vacío,en la sección './/InformacionReferencia"
-    else:
-        return True
+
 
 def validateDocumentType(senderReferenceinfoNode):
     try:
@@ -61,20 +63,18 @@ def validateDocumentType(senderReferenceinfoNode):
 
 
 def validateCode(senderReferenceinfoNode):
-    
-    docType = senderReferenceinfoNode.find('eInvoiceNameSpace:TipoDoc', namespaces).text
-    if docType != "13":
         try:
-            code = senderReferenceinfoNode.find('eInvoiceNameSpace:Codigo', namespaces).text
-            if len(code) != 2:
-                return "Codigo (" + code + ") posee un número de dígitos no permitido, debe ser igual a (2) en sección './/InformacionReferencia"
-            else:
+            docType = senderReferenceinfoNode.find('eInvoiceNameSpace:TipoDoc', namespaces).text
+            if docType != "13":
+                code = senderReferenceinfoNode.find('eInvoiceNameSpace:Codigo', namespaces).text
+                if len(code) != 2:
+                    return "Codigo (" + code + ") posee un número de dígitos no permitido, debe ser igual a (2) en sección './/InformacionReferencia"
+                else:
+                    return True
+            else: 
                 return True
         except:
             return "Nodo 'Codigo' no puede ser vacío, en sección './/InformacionReferencia"
-    else: 
-        return True
-
 
 def isValidDateTime(dateTimeStr):
     try:
@@ -119,16 +119,18 @@ def validateSentDate(senderReferenceinfoNode):
 
 
 def validateReasonEmpty(senderReferenceinfoNode):
-    docType = senderReferenceinfoNode.find('eInvoiceNameSpace:TipoDoc', namespaces).text
-    if docType != "13":
+  
         try:
-            Reason = senderReferenceinfoNode.find('eInvoiceNameSpace:Razon', namespaces).text
-            if len(Reason) == 0 or len(Reason) > 180:
-                return "-25, El nombre de Razon no puede estar vacío ni exceder los 180 caracteres"
+            docType = senderReferenceinfoNode.find('eInvoiceNameSpace:TipoDoc', namespaces).text
+            if docType != "13":
+                Reason = senderReferenceinfoNode.find('eInvoiceNameSpace:Razon', namespaces).text
+                if len(Reason) == 0 or len(Reason) > 180:
+                    return "-25, El nombre de Razon no puede estar vacío ni exceder los 180 caracteres"
+                else:
+                    return True
             else:
                 return True
         except:
             return "Nodo 'Razon' de sección de Informacion de referencia no puede ser vacío "
-    else:
-        return True
+
 
