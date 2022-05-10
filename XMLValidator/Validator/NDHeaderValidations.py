@@ -11,12 +11,32 @@ def prependNamespace(node):
 
 def validateHeaderInfo(data: xml.etree.ElementTree.Element):
 
-    results = [validateActivityCode(data), validateSentDate(data), validateSalesCondition(data),
+    results = [validateClave(data),validateConsecutive(data),validateActivityCode(data), validateSentDate(data), validateSalesCondition(data),
                validateSalesConditionNumber(data), validateSalesCreditTerm(data),
                validateSalesCeditTermFormat(data), validatePaymentMethod(data), validatePaymentMethodFormat(data)]
     formattedHeaderResults = AuxiliarFunctions.flattenList(results)
     return formattedHeaderResults
 
+
+def validateClave(data: xml.etree.ElementTree.Element):
+        try:
+             clave = data.find('eInvoiceNameSpace:Clave', namespaces).text
+             if len(clave) == 0 or len(clave) != 50:
+                return "-25, La calve  no puede estar vacía ni exceder, ni ser minimo los 50 caracteres, en la sección './/Encabezado"
+             else:
+                return True
+        except:
+            return "Nodo 'Clave' de sección de Encabezado no puede ser vacío,en la sección './/Encabezado"
+
+def validateConsecutive(data: xml.etree.ElementTree.Element):
+        try:
+             Consecutive = data.find('eInvoiceNameSpace:NumeroConsecutivo', namespaces).text
+             if len(Consecutive) == 0 or len(Consecutive) != 20:
+                return "-25, El NumeroConsecutivo  no puede estar vacía ni exceder, ni ser minimo los 20 caracteres, en la sección './/Encabezado"
+             else:
+                return True
+        except:
+            return "Nodo 'NumeroConsecutivo' de sección de Encabezado no puede ser vacío,en la sección './/Encabezado"
 
 def validateActivityCode(data: xml.etree.ElementTree.Element):
     try:
