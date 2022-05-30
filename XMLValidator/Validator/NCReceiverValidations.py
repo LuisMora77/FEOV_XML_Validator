@@ -49,7 +49,6 @@ def validateReceiverID(receiverNode):
     else:
         return True
 
-
 def validateReceiverIDType(receiverNode):
     acceptedIDTypes = ["01", "02", "03", "04"]
     IDNode = receiverNode.find('eInvoiceNameSpace:Identificacion', namespaces)
@@ -66,16 +65,15 @@ def validateReceiverIDType(receiverNode):
         return "Nodo 'Tipo' en sección Receptor/Identificacion no puede ser vacío."
 
 
-
 def validateReceiverIDNum(receiverNode):
     IDNode = receiverNode.find('eInvoiceNameSpace:Identificacion', namespaces)
     IDNodeType = IDNode.find('eInvoiceNameSpace:Tipo', namespaces).text
     IDNodeNumber = IDNode.find('eInvoiceNameSpace:Numero', namespaces).text
     IdTypesCorrespondingFunctions = {
-        "01": AuxiliarFunctions.validatePhysicalID,
-        "02": AuxiliarFunctions.validateLegalID,
-        "03": AuxiliarFunctions.validateDIMEXID,
-        "04": AuxiliarFunctions.validateNITEID
+        "01": AuxiliarFunctions.validatePhysicalIDRec,
+        "02": AuxiliarFunctions.validateLegalIDRec,
+        "03": AuxiliarFunctions.validateDIMEXIDRec,
+        "04": AuxiliarFunctions.validateNITEIDRec
     }
     try:
         chosen_operation_function = IdTypesCorrespondingFunctions.get(IDNodeType,
