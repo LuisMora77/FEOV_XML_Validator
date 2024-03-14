@@ -66,14 +66,13 @@ def validateReceiverIDType(receiverNode):
         return "Nodo 'Tipo' en sección Receptor/Identificacion no puede ser vacío."
 
 
-
 def validateReceiverIDNum(receiverNode):
     IDNode = receiverNode.find('eInvoiceNameSpace:Identificacion', namespaces)
     IDNodeType = IDNode.find('eInvoiceNameSpace:Tipo', namespaces).text
     IDNodeNumber = IDNode.find('eInvoiceNameSpace:Numero', namespaces).text
     IdTypesCorrespondingFunctions = {
         "01": AuxiliarFunctions.validatePhysicalID,
-        "02": AuxiliarFunctions.validateLegalID,
+        "02": AuxiliarFunctions.validateLegalIDRec,
         "03": AuxiliarFunctions.validateDIMEXID,
         "04": AuxiliarFunctions.validateNITEID
     }

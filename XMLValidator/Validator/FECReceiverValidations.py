@@ -72,10 +72,10 @@ def validateReceiverIDNum(receiverNode):
     IDNodeType = IDNode.find('eInvoiceNameSpace:Tipo', namespaces).text
     IDNodeNumber = IDNode.find('eInvoiceNameSpace:Numero', namespaces).text
     IdTypesCorrespondingFunctions = {
-        "01": AuxiliarFunctions.validatePhysicalID,
-        "02": AuxiliarFunctions.validateLegalID,
-        "03": AuxiliarFunctions.validateDIMEXID,
-        "04": AuxiliarFunctions.validateNITEID
+        "01": AuxiliarFunctions.validatePhysicalIDRec,
+        "02": AuxiliarFunctions.validateLegalIDRec,
+        "03": AuxiliarFunctions.validateDIMEXIDRec,
+        "04": AuxiliarFunctions.validateNITEIDRec
     }
     try:
         chosen_operation_function = IdTypesCorrespondingFunctions.get(IDNodeType,

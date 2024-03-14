@@ -26,12 +26,12 @@ SECRET_KEY = 'django-insecure-9q67jv_b8jq@hy^9da7xu#tli&+l$o9mkzny=fhd2)(awb+m26
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gi-axusers','127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
-INSTALLED_APPS = [
+BASE_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +49,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+THIRD_APPS = [
+    'rest_framework',
+]
+
+INSTALLED_APPS = BASE_APPS + THIRD_APPS
 
 ROOT_URLCONF = 'foo.urls'
 

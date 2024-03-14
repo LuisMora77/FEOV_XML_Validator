@@ -287,10 +287,10 @@ def validateTaxRate(data, LineNum):
         return True
     try:
         taxRateNode = taxNode.find('eInvoiceNameSpace:Tarifa', namespaces).text
-        isValidDecimal = AuxiliarFunctions.validateDecimal(taxRateNode, 4, 5)
+        isValidDecimal = AuxiliarFunctions.validateDecimal(taxRateNode, 4, 2) or AuxiliarFunctions.validateDecimal(taxRateNode, 4, 5)
         if not isValidDecimal:
             return "Valor de nodo 'Tarifa' en sección 'DetalleServicio/LineaDetalle/Impuesto', línea " \
-                   + str(LineNum + 1) + " no posee un formato válido (18 enteros (máximo), 5 decimales. Recibido: " \
+                   + str(LineNum + 1) + " no posee un formato válido (4 enteros (máximo), 2 decimales. Recibido: " \
                    + taxRateNode + ")"
         else:
             return True

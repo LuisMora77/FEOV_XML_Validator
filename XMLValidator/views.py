@@ -11,3 +11,7 @@ def index(request):
     docType = request.headers['docType']
     xml = request.body.decode('UTF-8')
     return HttpResponse(main.runPath(xml, typeEinvoice,docType))
+
+
+
+

@@ -11,7 +11,9 @@ def prependNamespace(node):
 
 def validateHeaderInfo(data: xml.etree.ElementTree.Element):
 
-    results = [validateClave(data),validateConsecutive(data),validateActivityCode(data), validateSentDate(data), validateSalesCondition(data),
+#validar clave "validateClave(data)" , validar consecutivo "validateConsecutive(data)",
+
+    results = [validateActivityCode(data), validateSentDate(data), validateSalesCondition(data),
                validateSalesConditionNumber(data), validateSalesCreditTerm(data),
                validateSalesCeditTermFormat(data), validatePaymentMethod(data), validatePaymentMethodFormat(data)]
     formattedHeaderResults = AuxiliarFunctions.flattenList(results)

@@ -15,8 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+from Utils.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('XMLValidator/',include('XMLValidator.urls'))
+    path('XMLValidator/',include('XMLValidator.urls')),
+    path('Utils/ConvertJsonToXML',ConvertJsonToXML.as_view())
 ]
