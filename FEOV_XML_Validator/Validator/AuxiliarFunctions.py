@@ -10,10 +10,24 @@ def validatePhysicalID(id):
     else:
         return True
 
+def validatePhysicalIDRec(id):
+    if id[0] == "0" or len(id) != 9 or ("-" in id):
+        return "La cedula fisica del Receptor (" + str(id) + ") no posee la estructura adecuada ( 9 dígitos," \
+               " sin ceros al inicio y sin guiones)."
+    else:
+        return True
+
 
 def validateLegalID(id):
     if len(id) != 10 or ("-" in id):
         return "La cedula juridica del emisor (" + str(id) + ") no posee la estructura adecuada (10 digitos y" \
+               " sin guiones)."
+    else:
+        return True
+
+def validateLegalIDRec(id):
+    if len(id) != 10 or ("-" in id):
+        return "La cedula juridica del Receptor (" + str(id) + ") no posee la estructura adecuada (10 digitos y" \
                " sin guiones)."
     else:
         return True
@@ -26,10 +40,23 @@ def validateDIMEXID(id):
     else:
         return True
 
+def validateDIMEXIDRec(id):
+    if id[0] == "0" or len(id) not in [11, 12] or ("-" in id):
+        return "La cedula DIMEX del Receptor (" + str(id) + ") no posee la estructura adecuada ( 11 o 12 digitos, sin" \
+               " ceros al inicio y sin guiones)."
+    else:
+        return True
+
 
 def validateNITEID(id):
     if len(id) != 10 or ("-" in id):
         return "La cedula NITE del emisor (" + str(id) + ") no posee la estructura adecuada (10 digitos y sin guiones)."
+    else:
+        return True
+
+def validateNITEIDRec(id):
+    if len(id) != 10 or ("-" in id):
+        return "La cedula NITE del Receptor (" + str(id) + ") no posee la estructura adecuada (10 digitos y sin guiones)."
     else:
         return True
 
